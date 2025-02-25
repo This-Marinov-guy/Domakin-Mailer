@@ -17,7 +17,6 @@ app.listen(PORT, () => {
 
 // Background Task
 async function App() {
-  console.log(await subscribedNewsletterClients());
 }
 
 App();
