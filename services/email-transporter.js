@@ -19,7 +19,7 @@ export const sendMarketingEmail = async (templateId, receiver) => {
     },
   ];
 
-  const unsubscribeUrl = `https://domakin.nl/callback/newsletter/unsubscribe?email=${receiver.email}&id=${receiver.id}`;
+  const unsubscribeUrl = `${process.env.HOST_URL}/callback/newsletter/unsubscribe?email=${receiver.email}&id=${receiver.id}`;
 
   await client.send({
     from: sender,
