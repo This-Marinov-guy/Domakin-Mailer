@@ -2,6 +2,8 @@ import express from "express";
 import { subscribedNewsletterClients } from "./utils/database.js";
 
 import dotenv from "dotenv";
+import { DOMAKIN_HISTORY_TEMPLATE } from "./utils/templates.js";
+import { sendMarketingEmail } from "./services/email-transporter.js";
 dotenv.config();
 
 const app = express();
@@ -17,6 +19,10 @@ app.listen(PORT, () => {
 
 // Background Task
 async function App() {
+  const clients = await subscribedNewsletterClients();
+  for (const client of clients) {
+    // await sendMarketingEmail(DOMAKIN_HISTORY_TEMPLATE, client);
+  }
 }
 
 App();
