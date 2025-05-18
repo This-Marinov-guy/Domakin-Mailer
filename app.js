@@ -2,7 +2,7 @@ import express from "express";
 import { subscribedNewsletterClients } from "./utils/database.js";
 
 import dotenv from "dotenv";
-import { DOMAKIN_HISTORY_TEMPLATE, DOMAKIN_IMPACT_CHALLENGE } from "./utils/templates.js";
+import { DOMAKIN_HISTORY_TEMPLATE, DOMAKIN_IMPACT_CHALLENGE, DOMAKIN_LIST_ROOM_BG, DOMAKIN_LIST_ROOM_EN } from "./utils/templates.js";
 import { sendMarketingEmail } from "./services/email-transporter.js";
 dotenv.config();
 
@@ -19,9 +19,9 @@ app.listen(PORT, () => {
 
 // Background Task
 async function App() {
-  const clients = await subscribedNewsletterClients(['groningen']);
+  const clients = await subscribedNewsletterClients();
   for (const client of clients) {
-    // await sendMarketingEmail(DOMAKIN_IMPACT_CHALLENGE, client);
+    // await sendMarketingEmail(DOMAKIN_LIST_ROOM_BG, client);
   }
 
   console.log(`Emails sent successfully to all ${clients.length} clients.`);
