@@ -2,8 +2,15 @@ import express from "express";
 import { subscribedNewsletterClients } from "./utils/database.js";
 
 import dotenv from "dotenv";
-import { DOMAKIN_HISTORY_TEMPLATE, DOMAKIN_IMPACT_CHALLENGE, DOMAKIN_LIST_ROOM_BG, DOMAKIN_LIST_ROOM_EN } from "./utils/templates.js";
+import {
+  DOMAKIN_HISTORY_TEMPLATE,
+  DOMAKIN_IMPACT_CHALLENGE,
+  DOMAKIN_LIST_ROOM_BG,
+  DOMAKIN_LIST_ROOM_EN,
+} from "./utils/templates.js";
 import { sendMarketingEmail } from "./services/email-transporter.js";
+import { fetchWordpressPosts } from "./controllers/wordpress-controllers.js";
+import { fetchPropertyById } from "./controllers/property-controller.js";
 dotenv.config();
 
 const app = express();
@@ -19,13 +26,15 @@ app.listen(PORT, () => {
 
 // Background Task
 async function App() {
-  const clients = await subscribedNewsletterClients();
-  for (const client of clients) {
-    // await sendMarketingEmail(DOMAKIN_LIST_ROOM_BG, client);
-  }
+  // const clients = await subscribedNewsletterClients();
+  // for (const client of clients) {
+  //   // await sendMarketingEmail(DOMAKIN_LIST_ROOM_BG, client);
+  // }
 
-  console.log(`Emails sent successfully to all ${clients.length} clients.`);
-  
+  // console.log(`Emails sent successfully to all ${clients.length} clients.`);
+
+  // console.log(fetchWordpressPosts());
+  // console.log(fetchPropertyById(4));
 }
 
 App();

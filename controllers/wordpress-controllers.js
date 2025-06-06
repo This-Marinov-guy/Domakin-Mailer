@@ -1,27 +1,24 @@
-import HttpError from "../../models/Http-error.js";
+import HttpError from "../models/Http-error.js";
 import axios from "axios";
 import dotenv from "dotenv";
-import { PROTOCOL } from "../../util/config/access.js";
 dotenv.config();
 
 const ENDPOINT = "public-api.wordpress.com/wp/v2/sites/";
+const DOMAKIN_BLOG_URL = "https://www.domakin.nl/blog/";
 
-export const getWordpressPosts = async (req, res, next) => {
+export const fetchWordpressPosts = async (page = 1, perPage = 100) => {
+  const PROTOCOL = "https://";
   let response = null;
-  const page = 1;
-  const perPage = 100;
-
   try {
-    // TODO: paginate
     response = await axios.get(
       `${PROTOCOL}${ENDPOINT}${process.env.WORDPRESS_BLOG_ID}/posts?page=${page}&per_page=${perPage}`
     );
   } catch (err) {
-    return next(new HttpError(err, 500));
+    throw new Error(err);
   }
 
   if (!response.data) {
-    return next(new HttpError("Failed to load posts", 500));
+    throw new Error("Failed to load posts");
   }
 
   const posts = response.data.map((p, index) => {
@@ -48,13 +45,31 @@ export const getWordpressPosts = async (req, res, next) => {
         (description.trim().length > 200 ? "..." : "");
     }
 
+    const title = p.title.rendered.replace(/&nbsp;/g, " ");
+    const slug = title
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "") // Remove punctuation
+      .trim()
+      .replace(/\s+/g, "-");
+
     return {
       id: p.id,
+      url: DOMAKIN_BLOG_URL + p.id + "/" + slug,
       thumbnail: firstImageSrc,
-      title: p.title.rendered.replace(/&nbsp;/g, " "),
-      description: description,
+      title: title,
     };
   });
 
   return posts;
+};
+
+export const getWordpressPosts = async (req, res, next) => {
+  const page = 1;
+  const perPage = 100;
+  try {
+    const posts = await fetchWordpressPosts(page, perPage);
+    res.json(posts);
+  } catch (err) {
+    return next(new HttpError(err.message || err, 500));
+  }
 };
