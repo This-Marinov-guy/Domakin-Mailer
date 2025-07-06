@@ -3,6 +3,9 @@ import cors from "cors";
 import { allowedOrigins } from "./utils/access.js";
 import { firewall, rateLimiter } from "./middleware/firewall.js";
 import dotenv from "dotenv";
+import { subscribedNewsletterClients } from "./utils/database.js";
+import { sendMarketingEmail } from "./services/email-transporter.js";
+import { DOMAKIN_LIST_ROOM_EN } from "./utils/templates.js";
 dotenv.config();
 
 const app = express();
@@ -51,7 +54,7 @@ app.listen(PORT, () => {
 async function App() {
   // const clients = await subscribedNewsletterClients();
   // for (const client of clients) {
-  //   // await sendMarketingEmail(DOMAKIN_LIST_ROOM_BG, client);
+  //   await sendMarketingEmail(DOMAKIN_LIST_ROOM_EN, client);
   // }
 
   // console.log(`Emails sent successfully to all ${clients.length} clients.`);
