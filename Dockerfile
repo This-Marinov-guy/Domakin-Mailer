@@ -26,8 +26,9 @@ RUN chown -R node:node /usr/src/app
 USER node
 
 # Expose the port
-EXPOSE 3030
+EXPOSE 6000
 
 # Start with PM2
 
 CMD ["pm2-runtime", "start", "ecosystem.config.cjs"]
+
