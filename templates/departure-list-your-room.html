@@ -1,351 +1,493 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Domakin - List Your Room</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Domakin</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+      }
 
-    body {
-      color: #000;
-      line-height: 1.6;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-      background-color: #fafaf7;
-    }
-
-    .hero {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      color: white;
-      margin: 0 0 100px;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      min-height: 300px;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
-    }
-
-    .hero .logo-wrap {
-      margin-bottom: 24px;
-    }
-
-    .hero .logo {
-      width: 90px;
-      height: auto;
-    }
-
-    .hero h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    }
-
-    .hero p {
-      font-size: 18px;
-      margin: 0 10px;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    }
-
-    .content-card {
-      background: #fff;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-      max-width: 80%;
-      margin: -100px auto 20px;
-      position: relative;
-      z-index: 2;
-      padding: 30px;
-      text-align: center;
-    }
-
-    .content-card h2 {
-      font-size: 1.4rem;
-      margin-bottom: 15px;
-    }
-
-    .content-card p {
-      font-size: 0.95rem;
-      color: #555;
-      margin-bottom: 20px;
-    }
-
-    .countdown-container {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin: 25px 0;
-    }
-
-    .countdown-item {
-      text-align: center;
-    }
-
-    .countdown-number {
-      display: block;
-      background: #ff914d;
-      color: #fff;
-      font-size: 1.8rem;
-      font-weight: bold;
-      width: 60px;
-      height: 60px;
-      line-height: 60px;
-      border-radius: 12px;
-      margin-bottom: 5px;
-    }
-
-    .countdown-label {
-      font-size: 0.75rem;
-      color: #888;
-      text-transform: uppercase;
-    }
-
-    .benefits-list {
-      text-align: left;
-      max-width: 420px;
-      margin: 25px auto;
-    }
-
-    .benefit-item {
-      display: flex;
-      align-items: flex-start;
-      padding: 10px 0;
-      font-size: 0.95rem;
-    }
-
-    .benefit-icon {
-      margin-right: 10px;
-      flex-shrink: 0;
-    }
-
-    .benefit-icon img {
-      width: 28px;
-      height: 28px;
-      object-fit: contain;
-    }
-
-    .benefit-text strong {
-      display: block;
-      margin-bottom: 2px;
-    }
-
-    .benefit-text span {
-      color: #777;
-      font-size: 0.85rem;
-    }
-
-    .button-primary {
-      display: inline-block;
-      background-color: #ff914d;
-      color: #fff;
-      padding: 12px 30px;
-      border-radius: 20px;
-      text-decoration: none;
-      font-weight: 400;
-      margin: 20px auto;
-      text-align: center;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      transition: box-shadow 0.3s ease;
-    }
-
-    .departure-info {
-      background: #fff3eb;
-      border-left: 4px solid #ff914d;
-      padding: 15px 20px;
-      border-radius: 0 8px 8px 0;
-      text-align: left;
-      margin: 20px 0;
-    }
-
-    .departure-info strong {
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .departure-info span {
-      color: #555;
-      font-size: 0.9rem;
-    }
-
-    .footer {
-      background-color: #004aad;
-      padding: 20px;
-      color: white;
-      margin-top: 40px;
-      text-align: center;
-    }
-
-    .footer h2 {
-      font-size: 20px;
-      margin-bottom: 10px;
-    }
-
-    .button {
-      display: inline-block;
-      background-color: #ff914d;
-      color: #000000;
-      padding: 10px 20px;
-      border-radius: 4px;
-      text-decoration: none;
-      font-weight: 400;
-      margin: 10px 0;
-      text-align: center;
-    }
-
-    .footer-logo {
-      width: 150px;
-      height: auto;
-      margin-top: 20px;
-    }
-
-    .social-icons {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .social-icons img {
-      width: 32px;
-      height: 32px;
-    }
-
-    .bottom-footer {
-      text-align: center;
-      padding: 20px;
-      background-color: #ffffff;
-      border-bottom: 1px solid #C7C7BF;
-      font-size: 12px;
-      color: #534d21;
-    }
-
-    .bottom-footer a {
-      color: #7747ff;
-      text-decoration: none;
-    }
-
-    @media (max-width: 400px) {
-      .content-card {
-        max-width: 95%;
+      body {
+        color: #000;
+        line-height: 1.6;
+        max-width: 1200px;
+        margin: 0 auto;
         padding: 20px;
+        background-color: #fafaf7;
+      }
+
+      .header {
+        text-align: center;
+        border-top: 5px solid #ff914d;
+      }
+
+      .nav {
+        display: flex;
+        justify-content: center;
+        padding: 10px 0;
+      }
+
+      .logo {
+        width: 75px;
+        height: auto;
+        border-radius: 50%;
+      }
+
+      .button-two {
+        display: inline-block;
+        background-color: #ff914d;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 400;
+        margin: 20px auto 40px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: box-shadow 0.3s ease;
+      }
+
+      .image-container-hero {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        color: white;
+        margin: 30px 0 100px;
+        padding-top: 30px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        height: 300px;
+        border-radius: 8px;
+      }
+
+      .image-container-hero h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      }
+
+      .image-container-hero p {
+        font-size: 18px;
+        margin: 0 10px 30px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      }
+
+      .content-card {
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        max-width: 80%;
+        margin: -100px auto 20px;
+        position: relative;
+        z-index: 2;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .content-card h2 {
+        font-size: 1.4rem;
+        margin-bottom: 15px;
+      }
+
+      .content-card p {
+        font-size: 0.95rem;
+        color: #555;
+        margin-bottom: 20px;
+      }
+
+      .departure-info {
+        background: #fff3eb;
+        border-left: 4px solid #ff914d;
+        padding: 15px 20px;
+        border-radius: 0 8px 8px 0;
+        text-align: left;
+        margin: 20px 0;
+      }
+
+      .departure-info strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+      .departure-info span {
+        color: #555;
+        font-size: 0.9rem;
       }
 
       .countdown-container {
-        gap: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 25px 0;
+      }
+
+      .countdown-item {
+        text-align: center;
       }
 
       .countdown-number {
-        width: 50px;
-        height: 50px;
-        line-height: 50px;
-        font-size: 1.5rem;
+        display: block;
+        background: #ff914d;
+        color: #fff;
+        font-size: 1.8rem;
+        font-weight: bold;
+        width: 60px;
+        height: 60px;
+        line-height: 60px;
+        border-radius: 12px;
+        margin-bottom: 5px;
       }
 
-      .hero {
-        min-height: 350px;
+      .countdown-label {
+        font-size: 0.75rem;
+        color: #888;
+        text-transform: uppercase;
       }
-    }
-  </style>
-</head>
-<body>
 
-  <div class="hero" style="background-image: url('{{hero_background_url}}');">
-    <div class="logo-wrap">
+      .benefits-list {
+        text-align: left;
+        max-width: 420px;
+        margin: 25px auto;
+      }
+
+      .benefit-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 10px 0;
+        font-size: 0.95rem;
+      }
+
+      .benefit-icon {
+        margin-right: 10px;
+        flex-shrink: 0;
+      }
+      .benefit-icon img {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+      }
+      .benefit-text strong {
+        display: block;
+        margin-bottom: 2px;
+      }
+      .benefit-text span {
+        color: #777;
+        font-size: 0.85rem;
+      }
+
+      .listing-card {
+        display: flex;
+        color: black;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        max-width: 80%;
+        margin: -100px auto 20px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .listing-image {
+        position: relative;
+        flex-shrink: 0;
+      }
+      .listing-image img {
+        width: 250px;
+        height: 250px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .new-ribbon {
+        position: absolute;
+        top: 10px;
+        left: -30px;
+        background: #ff914d;
+        color: white;
+        padding: 5px 40px;
+        transform: rotate(-45deg);
+        font-size: 0.75rem;
+        font-weight: bold;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      .listing-content {
+        flex: 1;
+        padding: 20px;
+      }
+      .listing-content h3 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 1.25rem;
+      }
+
+      .listing-detail {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+        font-size: 0.95rem;
+      }
+
+      .listing-detail span {
+        margin-left: 8px;
+      }
+      .listing-detail img.icon {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+        vertical-align: middle;
+      }
+
+      .listing-bottom {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        color: #555;
+        border-top: 1px solid #eee;
+        padding-top: 12px;
+        margin-top: 16px;
+      }
+
+      .listing-bottom div {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .listing-bottom img.icon {
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+      }
+
+      .match-badge {
+        display: inline-block;
+        background: #e6f9ee;
+        color: #1a8c4e;
+        padding: 3px 10px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .footer {
+        background-color: #004aad;
+        padding: 20px;
+        color: white;
+        margin-top: 40px;
+        text-align: center;
+      }
+
+      .footer h2 {
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+
+      .button {
+        display: inline-block;
+        background-color: #ff914d;
+        color: #000000;
+        padding: 10px 20px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 400;
+        margin: 10px 0;
+        text-align: center;
+      }
+
+      .footer-logo {
+        width: 150px;
+        height: auto;
+        margin-top: 20px;
+      }
+
+      .social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .social-icons img {
+        width: 32px;
+        height: 32px;
+      }
+
+      .bottom-footer {
+        text-align: center;
+        padding: 20px;
+        background-color: #ffffff;
+        border-bottom: 1px solid #c7c7bf;
+        font-size: 12px;
+        color: #534d21;
+      }
+
+      .bottom-footer a {
+        color: #7747ff;
+        text-decoration: none;
+      }
+
+      .blog-card {
+        margin: 50px auto;
+        max-width: 600px;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .blog-card img {
+        width: 50%;
+      }
+      .blog-details {
+        flex: 1;
+      }
+
+      @media (max-width: 400px) {
+        .blog-card {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+        .blog-card img {
+          width: 100%;
+        }
+        .listing-card {
+          flex-direction: column;
+        }
+        .listing-image img {
+          width: 100%;
+          height: 200px;
+        }
+        .image-container-hero {
+          height: 350px;
+        }
+        .content-card {
+          max-width: 95%;
+          padding: 20px;
+        }
+        .countdown-number {
+          width: 50px;
+          height: 50px;
+          line-height: 50px;
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="nav">
+        <a href="{{home_url}}">
+          <img src="{{logo_url}}" alt="Domakin Logo" class="logo" />
+        </a>
+      </div>
+    </div>
+
+    <div
+      class="image-container-hero"
+      style="background-image: url('{{hero_background_url}}');"
+    >
+      <h1>{{hero_title}}</h1>
+      <p>{{hero_subtitle}}</p>
+    </div>
+
+    <div class="content-card" style="margin-top: -13em">
+      <h2>Hi {{user_name}}, time to list your room</h2>
+
+      <div class="departure-info">
+        <strong>Your departure date: {{departure_date}}</strong>
+        <span>{{room_address}}, {{room_city}}</span>
+      </div>
+
+      <div class="countdown-container">
+        <div class="countdown-item">
+          <span class="countdown-number">{{days_left}}</span>
+          <span class="countdown-label">Days</span>
+        </div>
+        <div class="countdown-item">
+          <span class="countdown-number">left</span>
+          <span class="countdown-label">&nbsp;</span>
+        </div>
+      </div>
+
+      <p>{{body_message}}</p>
+
+      <div class="benefits-list">
+        <div class="benefit-item">
+          <span class="benefit-icon"
+            ><img src="{{icon_documents_url}}" alt="Free listing"
+          /></span>
+          <div class="benefit-text">
+            <strong>{{benefit_1_title}}</strong>
+            <span>{{benefit_1_text}}</span>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon"
+            ><img src="{{icon_user_url}}" alt="Verified tenants"
+          /></span>
+          <div class="benefit-text">
+            <strong>{{benefit_2_title}}</strong>
+            <span>{{benefit_2_text}}</span>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <span class="benefit-icon"
+            ><img src="{{icon_house_url}}" alt="Smooth handover"
+          /></span>
+          <div class="benefit-text">
+            <strong>{{benefit_3_title}}</strong>
+            <span>{{benefit_3_text}}</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center">
+        <a href="{{list_room_url}}" class="button-two">{{cta_button_text}}</a>
+      </div>
+    </div>
+
+    <div class="footer">
+      <h2>{{footer_heading}}</h2>
+      <p>{{footer_text}}</p>
+      <a href="{{contact_url}}" class="button">{{contact_button_text}}</a>
+
+      <div class="social-icons">
+        <a href="https://linkedin.com/company/domakin" target="_blank">
+          <img src="{{linkedin_icon_url}}" alt="LinkedIn" />
+        </a>
+        <a href="https://www.instagram.com/domakin.nl" target="_blank">
+          <img src="{{instagram_icon_url}}" alt="Instagram" />
+        </a>
+        <a
+          href="https://www.facebook.com/profile.php?id=100093230497851"
+          target="_blank"
+        >
+          <img src="{{facebook_icon_url}}" alt="Facebook" />
+        </a>
+      </div>
+
       <a href="{{home_url}}">
-        <img src="{{logo_url}}" alt="Domakin Logo" class="logo">
-      </a>
-    </div>
-    <h1>{{hero_title}}</h1>
-    <p>{{hero_subtitle}}</p>
-  </div>
-
-  <div class="content-card" style="margin-top: -13em">
-    <h2>Hi {{user_name}}, time to list your room</h2>
-
-    <div class="departure-info">
-      <strong>Your departure date: {{departure_date}}</strong>
-      <span>{{room_address}}, {{room_city}}</span>
-    </div>
-
-    <div class="countdown-container">
-      <div class="countdown-item">
-        <span class="countdown-number">{{days_left}}</span>
-        <span class="countdown-label">Days</span>
-      </div>
-      <div class="countdown-item">
-        <span class="countdown-number">left</span>
-        <span class="countdown-label">&nbsp;</span>
-      </div>
-    </div>
-
-    <p>{{body_message}}</p>
-
-    <div class="benefits-list">
-      <div class="benefit-item">
-        <span class="benefit-icon"><img src="{{icon_documents_url}}" alt="Free listing"></span>
-        <div class="benefit-text">
-          <strong>{{benefit_1_title}}</strong>
-          <span>{{benefit_1_text}}</span>
-        </div>
-      </div>
-      <div class="benefit-item">
-        <span class="benefit-icon"><img src="{{icon_user_url}}" alt="Verified tenants"></span>
-        <div class="benefit-text">
-          <strong>{{benefit_2_title}}</strong>
-          <span>{{benefit_2_text}}</span>
-        </div>
-      </div>
-      <div class="benefit-item">
-        <span class="benefit-icon"><img src="{{icon_house_url}}" alt="Smooth handover"></span>
-        <div class="benefit-text">
-          <strong>{{benefit_3_title}}</strong>
-          <span>{{benefit_3_text}}</span>
-        </div>
-      </div>
-    </div>
-
-    <a href="{{list_room_url}}" class="button-primary">{{cta_button_text}}</a>
-  </div>
-
-  <div class="footer">
-    <h2>{{footer_heading}}</h2>
-    <p>{{footer_text}}</p>
-    <a href="{{contact_url}}" class="button">{{contact_button_text}}</a>
-
-    <div class="social-icons">
-      <a href="https://linkedin.com/company/domakin" target="_blank">
-        <img src="{{linkedin_icon_url}}" alt="LinkedIn">
-      </a>
-      <a href="https://www.instagram.com/domakin.nl" target="_blank">
-        <img src="{{instagram_icon_url}}" alt="Instagram">
-      </a>
-      <a href="https://www.facebook.com/profile.php?id=100093230497851" target="_blank">
-        <img src="{{facebook_icon_url}}" alt="Facebook">
+        <img src="{{logo_url}}" alt="Domakin Logo" class="footer-logo" />
       </a>
     </div>
 
-    <a href="{{home_url}}">
-      <img src="{{logo_url}}" alt="Domakin Logo" class="footer-logo">
-    </a>
-  </div>
-
-  <div class="bottom-footer">
-    <p>{{unsubscribe_text}} <a href="{{unsubscribe_link}}" target="_blank">{{unsubscribe_link_text}}</a>.</p>
-  </div>
-
-</body>
+    <div class="bottom-footer">
+      <p>
+        {{unsubscribe_text}}
+        <a href="{{unsubscribe_link}}" target="_blank"
+          >{{unsubscribe_link_text}}</a
+        >.
+      </p>
+    </div>
+  </body>
 </html>

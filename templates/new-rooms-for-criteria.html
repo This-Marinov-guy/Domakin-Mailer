@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Domakin - New Rooms For You</title>
+  <title>Domakin</title>
   <style>
     * {
       box-sizing: border-box;
@@ -21,42 +21,60 @@
       background-color: #fafaf7;
     }
 
-    .hero {
+    .header {
+      text-align: center;
+      border-top: 5px solid #ff914d;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: center;
+      padding: 10px 0;
+    }
+
+    .logo {
+      width: 75px;
+      height: auto;
+      border-radius: 50%;
+    }
+
+    .button-two {
+      display: inline-block;
+      background-color: #ff914d;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-weight: 400;
+      margin: 20px auto 40px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .image-container-hero {
       position: relative;
       z-index: 1;
       text-align: center;
       color: white;
-      margin: 0 0 100px;
+      margin: 30px 0 100px;
+      padding-top: 30px;
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      min-height: 300px;
+      height: 300px;
       border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
     }
 
-    .hero .logo-wrap {
-      margin-bottom: 24px;
-    }
-
-    .hero .logo {
-      width: 90px;
-      height: auto;
-    }
-
-    .hero h1 {
+    .image-container-hero h1 {
       font-size: 28px;
       margin-bottom: 10px;
       text-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
 
-    .hero p {
+    .image-container-hero p {
       font-size: 18px;
-      margin: 0 10px;
+      margin: 0 10px 30px;
       text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
 
@@ -72,10 +90,7 @@
       text-align: center;
     }
 
-    .criteria-summary h2 {
-      font-size: 1.3rem;
-      margin-bottom: 15px;
-    }
+    .criteria-summary h2 { font-size: 1.3rem; margin-bottom: 15px; }
 
     .criteria-tags {
       display: flex;
@@ -106,13 +121,11 @@
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
       max-width: 80%;
       margin: 0 auto 20px;
-    }
-
-    .listing-image {
       position: relative;
-      flex-shrink: 0;
+      z-index: 2;
     }
 
+    .listing-image { position: relative; flex-shrink: 0; }
     .listing-image img {
       width: 250px;
       height: 250px;
@@ -133,16 +146,8 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
-    .listing-content {
-      flex: 1;
-      padding: 20px;
-    }
-
-    .listing-content h3 {
-      margin-top: 0;
-      margin-bottom: 20px;
-      font-size: 1.25rem;
-    }
+    .listing-content { flex: 1; padding: 20px; }
+    .listing-content h3 { margin-top: 0; margin-bottom: 20px; font-size: 1.25rem; }
 
     .listing-detail {
       display: flex;
@@ -151,21 +156,12 @@
       font-size: 0.95rem;
     }
 
-    .listing-detail img.icon {
-      width: 22px;
-      height: 22px;
-      object-fit: contain;
-      vertical-align: middle;
-    }
-
-    .listing-detail span {
-      margin-left: 8px;
-    }
+    .listing-detail span { margin-left: 8px; }
+    .listing-detail img.icon { width: 22px; height: 22px; object-fit: contain; vertical-align: middle; }
 
     .listing-bottom {
       display: flex;
       justify-content: space-between;
-      align-items: center;
       font-size: 0.9rem;
       color: #555;
       border-top: 1px solid #eee;
@@ -173,31 +169,8 @@
       margin-top: 16px;
     }
 
-    .listing-bottom div {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .listing-bottom img.icon {
-      width: 18px;
-      height: 18px;
-      object-fit: contain;
-    }
-
-    .button-primary {
-      display: inline-block;
-      background-color: #ff914d;
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 20px;
-      text-decoration: none;
-      font-weight: 400;
-      margin: 20px auto 40px;
-      text-align: center;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      transition: box-shadow 0.3s ease;
-    }
+    .listing-bottom div { display: flex; align-items: center; gap: 6px; }
+    .listing-bottom img.icon { width: 18px; height: 18px; object-fit: contain; }
 
     .match-badge {
       display: inline-block;
@@ -218,10 +191,7 @@
       text-align: center;
     }
 
-    .footer h2 {
-      font-size: 20px;
-      margin-bottom: 10px;
-    }
+    .footer h2 { font-size: 20px; margin-bottom: 10px; }
 
     .button {
       display: inline-block;
@@ -248,10 +218,7 @@
       margin-top: 20px;
     }
 
-    .social-icons img {
-      width: 32px;
-      height: 32px;
-    }
+    .social-icons img { width: 32px; height: 32px; }
 
     .bottom-footer {
       text-align: center;
@@ -267,35 +234,38 @@
       text-decoration: none;
     }
 
+    .blog-card {
+      margin: 50px auto;
+      max-width: 600px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .blog-card img { width: 50%; }
+    .blog-details { flex: 1; }
+
     @media (max-width: 400px) {
-      .criteria-summary {
-        max-width: 95%;
-      }
-
-      .listing-card {
-        flex-direction: column;
-        max-width: 95%;
-      }
-
-      .listing-image img {
-        width: 100%;
-        height: 200px;
-      }
-
-      .hero {
-        min-height: 350px;
-      }
+      .blog-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .blog-card img { width: 100%; }
+      .listing-card { flex-direction: column; max-width: 95%; }
+      .listing-image img { width: 100%; height: 200px; }
+      .image-container-hero { height: 350px; }
+      .criteria-summary { max-width: 95%; }
     }
   </style>
 </head>
 <body>
 
-  <div class="hero" style="background-image: url('{{hero_background_url}}');">
-    <div class="logo-wrap">
+  <div class="header">
+    <div class="nav">
       <a href="{{home_url}}">
         <img src="{{logo_url}}" alt="Domakin Logo" class="logo">
       </a>
     </div>
+  </div>
+
+  <div class="image-container-hero" style="background-image: url('{{hero_background_url}}');">
     <h1>{{hero_title}}</h1>
     <p>{{hero_subtitle}}</p>
   </div>
@@ -335,8 +305,20 @@
 {{/each}}
 
   <div style="text-align: center;">
-    <a href="{{view_all_rooms_url}}" class="button-primary">{{cta_button_text}}</a>
+    <a href="{{view_all_rooms_url}}" class="button-two">{{cta_button_text}}</a>
   </div>
+
+{{#if blog_posts}}
+{{#each blog_posts}}
+  <div class="blog-card">
+    <img src="{{this.image}}" alt="Blog image" class="blog-img" />
+    <div class="blog-details">
+      <h3>{{this.title}}</h3>
+      <a href="{{this.url}}">READ MORE</a>
+    </div>
+  </div>
+{{/each}}
+{{/if}}
 
   <div class="footer">
     <h2>{{footer_heading}}</h2>
