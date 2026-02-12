@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Domakin - Finish Your Listing</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      color: #000;
+      line-height: 1.6;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fafaf7;
+    }
+
+    .hero {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      color: white;
+      margin: 0 0 100px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 300px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .hero .logo-wrap {
+      margin-bottom: 24px;
+    }
+
+    .hero .logo {
+      width: 90px;
+      height: auto;
+    }
+
+    .hero h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .hero p {
+      font-size: 18px;
+      margin: 0 10px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .content-card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      max-width: 80%;
+      margin: -100px auto 20px;
+      position: relative;
+      z-index: 2;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .content-card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+
+    .content-card p {
+      font-size: 0.95rem;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .progress-bar-container {
+      background: #eee;
+      border-radius: 20px;
+      overflow: hidden;
+      height: 12px;
+      max-width: 400px;
+      margin: 0 auto 10px;
+    }
+
+    .progress-bar {
+      background: #ff914d;
+      height: 100%;
+      border-radius: 20px;
+    }
+
+    .progress-label {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 20px;
+    }
+
+    .steps-list {
+      text-align: left;
+      max-width: 400px;
+      margin: 20px auto;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 0.95rem;
+    }
+
+    .step-item:last-child {
+      border-bottom: none;
+    }
+
+    .step-icon {
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .step-icon img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+    }
+
+    .step-done {
+      color: #aaa;
+      text-decoration: line-through;
+    }
+
+    .button-primary {
+      display: inline-block;
+      background-color: #ff914d;
+      color: #fff;
+      padding: 12px 30px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-weight: 400;
+      margin: 20px auto;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .footer {
+      background-color: #004aad;
+      padding: 20px;
+      color: white;
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .footer h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .button {
+      display: inline-block;
+      background-color: #ff914d;
+      color: #000000;
+      padding: 10px 20px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 400;
+      margin: 10px 0;
+      text-align: center;
+    }
+
+    .footer-logo {
+      width: 150px;
+      height: auto;
+      margin-top: 20px;
+    }
+
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .social-icons img {
+      width: 32px;
+      height: 32px;
+    }
+
+    .bottom-footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #C7C7BF;
+      font-size: 12px;
+      color: #534d21;
+    }
+
+    .bottom-footer a {
+      color: #7747ff;
+      text-decoration: none;
+    }
+
+    @media (max-width: 400px) {
+      .content-card {
+        max-width: 95%;
+        padding: 20px;
+      }
+
+      .hero {
+        min-height: 350px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero" style="background-image: url('{{hero_background_url}}');">
+    <div class="logo-wrap">
+      <a href="{{home_url}}">
+        <img src="{{logo_url}}" alt="Domakin Logo" class="logo">
+      </a>
+    </div>
+    <h1>{{hero_title}}</h1>
+    <p>{{hero_subtitle}}</p>
+  </div>
+
+  <div class="content-card" style="margin-top: -13em">
+    <h2>Hi {{user_name}}, {{card_heading}}</h2>
+    <p>{{card_intro}}</p>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar" style="width: {{progress_percentage}}%;"></div>
+    </div>
+    <div class="progress-label">{{progress_percentage}}% {{progress_label}}</div>
+
+    <div class="steps-list">
+      <div class="step-item {{#if step_details_done}}step-done{{/if}}">
+        <span class="step-icon"><img src="{{icon_documents_url}}" alt=""></span>
+        <span>{{step_1_label}}</span>
+      </div>
+      <div class="step-item {{#if step_photos_done}}step-done{{/if}}">
+        <span class="step-icon"><img src="{{icon_box_url}}" alt=""></span>
+        <span>{{step_2_label}}</span>
+      </div>
+      <div class="step-item {{#if step_preferences_done}}step-done{{/if}}">
+        <span class="step-icon"><img src="{{icon_user_url}}" alt=""></span>
+        <span>{{step_3_label}}</span>
+      </div>
+      <div class="step-item {{#if step_publish_done}}step-done{{/if}}">
+        <span class="step-icon"><img src="{{icon_payment_url}}" alt=""></span>
+        <span>{{step_4_label}}</span>
+      </div>
+    </div>
+
+    <a href="{{continue_listing_url}}" class="button-primary">{{cta_button_text}}</a>
+  </div>
+
+  <div class="footer">
+    <h2>{{footer_heading}}</h2>
+    <p>{{footer_text}}</p>
+    <a href="{{contact_url}}" class="button">{{contact_button_text}}</a>
+
+    <div class="social-icons">
+      <a href="https://linkedin.com/company/domakin" target="_blank">
+        <img src="{{linkedin_icon_url}}" alt="LinkedIn">
+      </a>
+      <a href="https://www.instagram.com/domakin.nl" target="_blank">
+        <img src="{{instagram_icon_url}}" alt="Instagram">
+      </a>
+      <a href="https://www.facebook.com/profile.php?id=100093230497851" target="_blank">
+        <img src="{{facebook_icon_url}}" alt="Facebook">
+      </a>
+    </div>
+
+    <a href="{{home_url}}">
+      <img src="{{logo_url}}" alt="Domakin Logo" class="footer-logo">
+    </a>
+  </div>
+
+  <div class="bottom-footer">
+    <p>{{unsubscribe_text}} <a href="{{unsubscribe_link}}" target="_blank">{{unsubscribe_link_text}}</a>.</p>
+  </div>
+
+</body>
+</html>

@@ -19,7 +19,9 @@
     "express": "^4.19.2",
     "mailtrap": "^3.4.0",
     "moment": "^2.30.1",
-    "node-cache": "^5.1.2"
+    "node-cache": "^5.1.2",
+    "handlebars": "^4.7.8",
+    "nodemailer": "^6.9.16"
   },
   "devDependencies": {
     "nodemon": "^3.1.2"
