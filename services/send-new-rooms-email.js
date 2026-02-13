@@ -58,7 +58,7 @@ export async function sendNewRoomsForCriteriaEmail(receiver, language = "en") {
  * @param {string} [language="en"]
  * @returns {{ sent: number, errors: { email: string, error: string }[] }}
  */
-export async function sendNewRoomsForCriteriaToCitySubscribers(language = "en") {
+export async function sendNewRoomsForCriteriaToCitySubscribers(limitCity = null, language = "en") {
   const [properties, blogPostsRaw] = await Promise.all([
     fetchAllPropertiesWithLinkAndStatus2(language),
     fetchWordpressPosts(1, 100),
@@ -74,7 +74,8 @@ export async function sendNewRoomsForCriteriaToCitySubscribers(language = "en") 
 
   for (const property of properties) {
     const city = property.room_city;
-    if (!city) continue;
+
+    if (!city || (limitCity && city !== limitCity)) continue;
 
     const recipients = await getEmailsByCity(city);
 
