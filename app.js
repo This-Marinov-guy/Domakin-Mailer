@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { subscribedNewsletterClients } from "./utils/database.js";
 import { sendMarketingEmail } from "./services/email-transporter.js";
 import { DOMAKIN_LIST_ROOM_EN } from "./utils/templates.js";
+import { fetchOneProperty } from "./controllers/property-controller.js";
 dotenv.config();
 
 const app = express();
@@ -52,15 +53,7 @@ app.listen(PORT, () => {
 
 // Background Task
 async function App() {
-  // const clients = await subscribedNewsletterClients();
-  // for (const client of clients) {
-  //   await sendMarketingEmail(DOMAKIN_LIST_ROOM_EN, client);
-  // }
 
-  // console.log(`Emails sent successfully to all ${clients.length} clients.`);
-
-  // console.log(fetchWordpressPosts());
-  // console.log(fetchPropertyById(4));
 }
 
 App();

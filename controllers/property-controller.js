@@ -24,6 +24,31 @@ export const fetchPropertyById = async (id, language = "en") => {
   };
 };
 
+/**
+ * Fetches one property from the database (for emails, etc.).
+ * Returns same room_* shape as fetchPropertyById plus room_link.
+ */
+export const fetchOneProperty = async (language = "en") => {
+  const { data, error } = await supabase
+    .from("properties")
+    .select("property_data(id, title, city, address, rent, flatmates, period, images), link")
+    .limit(1)
+    .single();
+  if (error || !data) throw new Error(error?.message || "No property found");  
+
+  
+  return {
+    room_title: data.property_data[0].title[language],
+    room_city: data.property_data[0].city,
+    room_location: extractStreetName(data.property_data[0].address),
+    room_rent: data.property_data[0].rent,
+    room_period: data.property_data[0].period[language],
+    room_flatmates: data.property_data[0].flatmates[language],
+    room_image_src: (data.property_data[0].images || "").split(",")[0],
+    room_link: data.link,
+  };
+};
+
 export const getPropertyById = async (req, res, next) => {
   const { id } = req.params;
 

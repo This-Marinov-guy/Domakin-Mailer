@@ -65,7 +65,7 @@ export function departureListYourRoomData(receiver, overrides = {}) {
 
 /**
  * new-rooms-for-criteria.html
- * Variables: criteria_*, rooms (array: image, title, rent, location, city, period, flatmates, match_percentage), view_all_rooms_url, unsubscribe_link + shared
+ * Variables: criteria_*, rooms (array: image, title, rent, location, city, period, flatmates, match_percentage, url), view_all_rooms_url, unsubscribe_link + shared
  */
 export function newRoomsForCriteriaData(receiver, overrides = {}) {
   const unsubscribeLink = `${BASE_URL}/callback/newsletter/unsubscribe?email=${encodeURIComponent(receiver.email)}&id=${receiver.id || ""}`;
@@ -89,6 +89,7 @@ export function newRoomsForCriteriaData(receiver, overrides = {}) {
         period: "From March 2025",
         flatmates: "2 flatmates",
         match_percentage: 95,
+        url: "https://www.domakin.nl/properties/sample-room-1",
       },
     ],
     view_all_rooms_url: overrides.view_all_rooms_url || "https://www.domakin.nl/services/renting",
