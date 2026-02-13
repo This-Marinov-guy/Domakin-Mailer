@@ -50,3 +50,29 @@ export const subscribedNewsletterClients = async ({
     console.error("Error fetching newsletter clients:", error);
   }
 };
+
+/**
+ * Returns all recipients (id, email) that have the given city in newsletters.cities or search_renting.
+ * City matching is case-insensitive; newsletters use comma-separated cities; search_renting uses city or cities.
+ */
+export const getEmailsByCity = async (city) => {
+  if (!city || typeof city !== "string") return [];
+
+  // const normalizedCity = city.trim().toLowerCase();
+  // const newsletterRows = await subscribedNewsletterClients({ cities: [normalizedCity] });
+  const { data: searchRentingRows, error: searchError } = await supabase
+    .from("search_rentings")
+    .select("id, email, city");    
+
+  // const fromNewsletters = (newsletterRows || []).map((r) => ({ id: String(r.id), email: r.email }));
+  // const searchList = searchError || !searchRentingRows ? [] : searchRentingRows;
+  const fromSearchRenting = searchRentingRows
+    .filter((r) => {
+      return r.city.toLowerCase().includes(city.toLowerCase());
+    });
+    
+  const byEmail = new Map();
+  // fromNewsletters.forEach((r) => byEmail.set(r.email.toLowerCase(), r));
+  fromSearchRenting.forEach((r) => byEmail.set(r.email.toLowerCase(), r));
+  return Array.from(byEmail.values());
+};

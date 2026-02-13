@@ -49,6 +49,38 @@ export const fetchOneProperty = async (language = "en") => {
   };
 };
 
+/**
+ * Fetches all properties that have link and status = 2.
+ * Returns array of { link, room_link, room_title, room_city, room_location, room_rent, room_period, room_flatmates, room_image_src } for each.
+ */
+export const fetchAllPropertiesWithLinkAndStatus2 = async (language = "en") => {
+  const { data: rows, error } = await supabase
+    .from("properties")
+    .select("link, property_data(id, title, city, address, rent, flatmates, period, images)")
+    .eq("status", 2)
+    .not("link", "is", null);
+
+  if (error) throw new Error(error.message || "Failed to fetch properties");
+  if (!rows || rows.length === 0) return [];
+
+  return rows
+    .filter((r) => r.link && r.property_data && (Array.isArray(r.property_data) ? r.property_data[0] : r.property_data))
+    .map((r) => {
+      const pd = Array.isArray(r.property_data) ? r.property_data[0] : r.property_data;
+      return {
+        link: r.link,
+        room_link: r.link,
+        room_title: pd.title?.[language],
+        room_city: pd.city,
+        room_location: extractStreetName(pd.address),
+        room_rent: pd.rent,
+        room_period: pd.period?.[language],
+        room_flatmates: pd.flatmates?.[language],
+        room_image_src: (pd.images || "").split(",")[0],
+      };
+    });
+};
+
 export const getPropertyById = async (req, res, next) => {
   const { id } = req.params;
 
