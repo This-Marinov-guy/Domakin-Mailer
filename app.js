@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import cron from "node-cron";
 import { allowedOrigins } from "./utils/access.js";
 import { firewall, rateLimiter } from "./middleware/firewall.js";
 import dotenv from "dotenv";
@@ -8,6 +9,7 @@ import { sendMarketingEmail } from "./services/email-transporter.js";
 import { DOMAKIN_LIST_ROOM_EN } from "./utils/templates.js";
 import { fetchOneProperty } from "./controllers/property-controller.js";
 import { sendNewRoomsForCriteriaEmail, sendNewRoomsForCriteriaToCitySubscribers } from "./services/send-new-rooms-email.js";
+import { runEmailRemindersJob } from "./scheduler/email-reminders-job.js";
 dotenv.config();
 
 const app = express();
@@ -56,6 +58,22 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// Cron: every day at 9:00 NL time – process email_reminders (pending/failed, date = today)
+cron.schedule(
+  "0 9 * * *",
+  async () => {
+    console.log("[Cron] Running email reminders job at 9:00 NL...");
+    try {
+      const result = await runEmailRemindersJob();
+      console.log("[Cron] Email reminders:", result);
+      if (result.errors?.length) console.error("[Cron] Errors:", result.errors);
+    } catch (err) {
+      console.error("[Cron] Email reminders job failed:", err?.message || err);
+    }
+  },
+  { timezone: "Europe/Amsterdam" }
+);
 
 // Background Task
 async function App() {
