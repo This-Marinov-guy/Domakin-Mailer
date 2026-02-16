@@ -74,8 +74,8 @@ export async function sendNewRoomsForCriteriaToCitySubscribers(limitCity = null,
 
   for (const property of properties) {
     const city = property.room_city;
-
-    if (!city || (limitCity && city !== limitCity)) continue;
+    
+    if (!city || (limitCity && city.toLowerCase() !== limitCity.toLowerCase())) continue;
 
     const recipients = await getEmailsByCity(city);
 
