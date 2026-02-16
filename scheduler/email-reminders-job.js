@@ -20,7 +20,7 @@ function getTodayNL() {
 }
 
 /**
- * Fetch rows from email_reminders where status in ('pending','failed') and scheduled_date = today (NL).
+ * Fetch rows from email_reminders where status in ('pending','failed') and scheduled_date is today or in the past (NL).
  */
 async function fetchDueReminders() {
   const today = getTodayNL();
@@ -28,7 +28,7 @@ async function fetchDueReminders() {
     .from("email_reminders")
     .select("id, email, template_id, metadata, status")
     .in("status", ["pending", "failed"])
-    .eq("scheduled_date", today);
+    .lte("scheduled_date", today);
 
   if (error) throw new Error(error.message || "Failed to fetch email_reminders");
   return data || [];
