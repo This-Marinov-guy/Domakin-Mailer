@@ -7,4 +7,6 @@ export const DOMAKIN_LIST_ROOM_EN = "6fe03f98-fb61-41e1-b98f-5f9233a12dee";
 export const NEW_ROOMS_FOR_CRITERIA_TEMPLATE = "dde7e699-3412-4b7c-b3ce-3518050b71f5";
 
 /** Finish listing reminder (e.g. 2 days after listing application created). Replace with your Mailtrap template UUID. */
-export const FINISH_LISTING_TEMPLATE = "finish_listing";
+export const FINISH_LISTING_TEMPLATE = "e9a93603-ecde-467a-b54b-eb74b7ca5fec";
+
+export const LISTING_REMINDER_TEMPLATE = "78eaccd6-5e0e-4de1-a1de-d40a462b7bc9";
