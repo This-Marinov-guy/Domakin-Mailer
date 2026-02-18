@@ -3,6 +3,7 @@ import { supabase } from "../utils/config.js";
 import { sendMarketingEmail } from "../services/email-transporter.js";
 import { FINISH_LISTING_TEMPLATE } from "../utils/templates.js";
 import type { FinishApplicationJobResult } from "../types/index.js";
+import { progressPercentFromStep } from "../utils/helpers.js";
 
 const NL_FORMAT: Intl.DateTimeFormatOptions = {
   timeZone: "Europe/Amsterdam",
@@ -71,7 +72,7 @@ export async function runFinishApplicationJob(): Promise<FinishApplicationJobRes
   for (const row of rows) {
     const templateVariables = {
       name: row.name,
-      step: row.step,
+      progress_percent: progressPercentFromStep(Number(row.step)),
       email: row.email,
       city: row.city,
       address: row.address,
