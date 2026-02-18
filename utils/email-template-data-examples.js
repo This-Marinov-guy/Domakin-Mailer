@@ -4,7 +4,7 @@
  * Asset URLs come from utils/images.js (Cloudinary).
  */
 
-import { BACKGROUNDS, LOGOS, ICONS, SOCIAL_ICONS } from "./images.js";
+import { BACKGROUNDS, LOGOS, ICONS, SOCIAL_ICONS } from "./images.ts";
 
 const BASE_URL = process.env.HOST_URL || "https://domakin.nl";
 

@@ -1,14 +1,14 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const webOrigins = [
+const webOrigins: string[] = [
   "https://bulgariansociety.netlify.app",
   "https://bulgariansociety.nl",
   "https://www.bulgariansociety.nl",
   "https://starfish-app-tvh24.ondigitalocean.app",
 ];
 
-const stripeUrls = [
+const stripeUrls: string[] = [
   "https://a.stripecdn.com",
   "https://api.stripe.com",
   "https://atlas.stripe.com",
@@ -41,7 +41,7 @@ const stripeUrls = [
   "https://uploads.stripe.com",
 ];
 
-const stripeIp = [
+const stripeIp: string[] = [
   "3.18.12.63",
   "3.130.192.231",
   "13.235.14.237",
@@ -56,12 +56,18 @@ const stripeIp = [
   "54.187.216.72",
 ];
 
-export const allowedOrigins = [...webOrigins, ...stripeUrls];
-export const allowedIps = [...stripeIp];
+export const allowedOrigins: string[] = [...webOrigins, ...stripeUrls];
+export const allowedIps: string[] = [...stripeIp];
 
 export const PROTOCOL = process.env.APP_ENV === "dev" ? "http://" : "https://";
 
-export const allowedCrawlers = [
+export interface CrawlerConfig {
+  name: string;
+  userAgent: string;
+  domain: string;
+}
+
+export const allowedCrawlers: CrawlerConfig[] = [
   { name: "Googlebot", userAgent: "Googlebot", domain: ".googlebot.com" },
   { name: "Bingbot", userAgent: "bingbot", domain: ".search.msn.com" },
   { name: "Yahoo Slurp", userAgent: "Slurp", domain: ".yahoo.com" },
@@ -69,11 +75,7 @@ export const allowedCrawlers = [
   { name: "Baiduspider", userAgent: "Baiduspider", domain: ".baidu.com" },
   { name: "YandexBot", userAgent: "YandexBot", domain: ".yandex.ru" },
   { name: "Applebot", userAgent: "Applebot", domain: ".applebot.apple.com" },
-  {
-    name: "Facebook",
-    userAgent: "facebookexternalhit",
-    domain: ".facebook.com",
-  },
+  { name: "Facebook", userAgent: "facebookexternalhit", domain: ".facebook.com" },
   { name: "Twitterbot", userAgent: "Twitterbot", domain: ".twitter.com" },
   { name: "LinkedInBot", userAgent: "LinkedInBot", domain: ".linkedin.com" },
   { name: "Pinterest", userAgent: "Pinterest", domain: ".pinterest.com" },

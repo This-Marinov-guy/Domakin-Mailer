@@ -1,17 +1,22 @@
 import { supabase } from "./config.js";
+import type { NewsletterRow, SearchRentingRow } from "../types/index.js";
 
 export const subscribedNewsletterClients = async ({
   cities = [],
   language = null,
   year = null,
   createdAtNull = false,
-} = {}) => {
+}: {
+  cities?: string[];
+  language?: string | null;
+  year?: number | null;
+  createdAtNull?: boolean;
+} = {}): Promise<NewsletterRow[] | undefined> => {
   try {
     let query = supabase
       .from("newsletters")
       .select("id, email, cities, language, created_at, year");
 
-    // Apply conditional filters
     if (language) {
       query = query.eq("language", language);
     }
@@ -24,19 +29,17 @@ export const subscribedNewsletterClients = async ({
       query = query.is("created_at", null);
     }
 
-    // Fetch data
     let { data, error } = await query;
 
     if (error) {
       throw error;
     }
 
-    // Filter by cities if provided
     if (cities.length > 0) {
-      data = data.filter((client) => {
+      data = (data ?? []).filter((client) => {
         const clientCities = client.cities
           ?.split(",")
-          .map((c) => c.trim().toLowerCase());
+          .map((c: string) => c.trim().toLowerCase());
         return (
           Array.isArray(clientCities) &&
           cities.some((city) => clientCities.includes(city.toLowerCase()))
@@ -45,7 +48,7 @@ export const subscribedNewsletterClients = async ({
     }
 
     console.log(data);
-    return data;
+    return data as NewsletterRow[];
   } catch (error) {
     console.error("Error fetching newsletter clients:", error);
   }
@@ -53,33 +56,29 @@ export const subscribedNewsletterClients = async ({
 
 /**
  * Returns all recipients (id, email) that have the given city in newsletters.cities or search_renting.
- * City matching is case-insensitive; newsletters use comma-separated cities; search_renting uses city or cities.
  */
-export const getEmailsByCity = async (city) => {
+export const getEmailsByCity = async (
+  city: string
+): Promise<(NewsletterRow | SearchRentingRow)[]> => {
   if (!city || typeof city !== "string") return [];
 
-  // const normalizedCity = city.trim().toLowerCase();
-  // const newsletterRows = await subscribedNewsletterClients({ cities: [normalizedCity] });
-  const { data: searchRentingRows, error: searchError } = await supabase
+  const { data: searchRentingRows } = await supabase
     .from("search_rentings")
     .select("id, email, city");
-    
-    const { data: newsletterRows, error: newsletterError } = await supabase
+
+  const { data: newsletterRows } = await supabase
     .from("newsletters")
     .select("id, email, cities");
 
-  // const fromNewsletters = (newsletterRows || []).map((r) => ({ id: String(r.id), email: r.email }));
-  // const searchList = searchError || !searchRentingRows ? [] : searchRentingRows;
-  const fromSearchRenting = searchRentingRows
-    .filter((r) => {
-      return r.city.toLowerCase().includes(city.toLowerCase());
-    });    
+  const fromSearchRenting: SearchRentingRow[] = (searchRentingRows ?? []).filter(
+    (r: SearchRentingRow) => r.city.toLowerCase().includes(city.toLowerCase())
+  );
 
-    const fromNewsletters = newsletterRows.filter((r) => {
-      return r.cities.toLowerCase().includes(city.toLowerCase());
-    });
-    
-  const byEmail = new Map();
+  const fromNewsletters: NewsletterRow[] = (newsletterRows ?? []).filter(
+    (r: NewsletterRow) => r.cities.toLowerCase().includes(city.toLowerCase())
+  );
+
+  const byEmail = new Map<string, NewsletterRow | SearchRentingRow>();
   fromNewsletters.forEach((r) => byEmail.set(r.email.toLowerCase(), r));
   fromSearchRenting.forEach((r) => byEmail.set(r.email.toLowerCase(), r));
   return Array.from(byEmail.values());

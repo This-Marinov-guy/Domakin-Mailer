@@ -1,18 +1,18 @@
-export const BACKGROUNDS = {
+export const BACKGROUNDS: Record<number, string> = {
   1: "https://res.cloudinary.com/dabhuzbsm/image/upload/v1770916292/7_aujjmd.webp",
   2: "https://res.cloudinary.com/dabhuzbsm/image/upload/v1770916292/8_gaeogm.webp",
   3: "https://res.cloudinary.com/dabhuzbsm/image/upload/v1770916292/2_ben5qe.webp",
   4: "https://res.cloudinary.com/dabhuzbsm/image/upload/v1770916579/5_eeeapi.webp",
 };
 
-export const LOGOS = {
+export const LOGOS: Record<string, string> = {
   domakin:
     "https://res.cloudinary.com/dabhuzbsm/image/upload/v1770916657/logo-2_qki6zx.png",
   rentswap:
     "https://res.cloudinary.com/dabhuzbsm/image/upload/v1770916684/android-chrome-512x512_uolyov.png",
 };
 
-export const ICONS = {
+export const ICONS: Record<string, string> = {
   user: "https://res.cloudinary.com/dabhuzbsm/image/upload/v1770917707/user_btgyte.png",
   cash: "https://res.cloudinary.com/dabhuzbsm/image/upload/v1770917695/cash_kptsdm.png",
   location:
@@ -28,7 +28,7 @@ export const ICONS = {
     "https://res.cloudinary.com/dabhuzbsm/image/upload/v1770917705/payment_paqygw.png",
 };
 
-export const SOCIAL_ICONS = {
+export const SOCIAL_ICONS: Record<string, string> = {
   linkedin:
     "https://mailsend-email-assets.mailtrap.io/kredvfwvitijsj7t6fwr88ik5d9x.png",
   instagram:

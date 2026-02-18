@@ -6,24 +6,18 @@ import { firewall, rateLimiter } from "./middleware/firewall.js";
 import { axiomLogging } from "./middleware/axiom-logging.js";
 import { logScheduler } from "./utils/axiom-logger.js";
 import dotenv from "dotenv";
-import { getEmailsByCity, subscribedNewsletterClients } from "./utils/database.js";
-import { sendMarketingEmail } from "./services/email-transporter.js";
-import { DOMAKIN_LIST_ROOM_EN } from "./utils/templates.js";
-import { fetchOneProperty } from "./controllers/property-controller.js";
-import { sendNewRoomsForCriteriaEmail, sendNewRoomsForCriteriaToCitySubscribers } from "./services/send-new-rooms-email.js";
-import { runEmailRemindersJob } from "./scheduler/email-reminders-job.js";
-import { runFinishApplicationJob } from "./scheduler/finish-application-job.js";
 import listingRoutes from "./routes/listing-routes.js";
 import roomRoutes from "./routes/room-routes.js";
 import reminderRoutes from "./routes/reminder-routes.js";
 import HttpError from "./models/Http-error.js";
+import { runEmailRemindersJob } from "./scheduler/email-reminders-job.js";
+import { runFinishApplicationJob } from "./scheduler/finish-application-job.js";
 dotenv.config();
 
 const app = express();
 
-const PORT = process.env.PORT || 8080; // Default to 8080 if PORT is not set
+const PORT = Number(process.env.PORT) || 8080;
 
-// Firewall
 app.set("trust proxy", true);
 
 if (app.get("env") !== "development") {
@@ -35,27 +29,26 @@ if (app.get("env") !== "development") {
 
 app.use(
   cors({
-    origin: (origin, callback) => {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(
           new HttpError(
             "There was a problem with your request, please try again later!",
-            403,
-          ),
+            403
+          )
         );
       }
     },
-  }),
+  })
 );
 
 app.use((req, res, next) => {
-  if ("OPTIONS" == req.method) {
+  if (req.method === "OPTIONS") {
     return res.sendStatus(200);
-  } else {
-    next();
   }
+  next();
 });
 
 app.use(axiomLogging);
@@ -69,7 +62,7 @@ app.use("/api/listing", listingRoutes);
 app.use("/api/room", roomRoutes);
 app.use("/api/reminder", reminderRoutes);
 
-app.use((err, req, res, next) => {
+app.use((err: HttpError & { code?: number }, req: express.Request, res: express.Response) => {
   const code = err.code && Number.isInteger(err.code) ? err.code : 500;
   res.status(code).json({ ok: false, message: err.message || "Server error" });
 });
@@ -78,7 +71,6 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// Cron: every day at 9:00 NL time – process email_reminders (pending/failed, date = today or past)
 cron.schedule(
   "0 9 * * *",
   async () => {
@@ -102,21 +94,21 @@ cron.schedule(
           durationMs,
         },
       });
-    } catch (err) {
+    } catch (err: unknown) {
       const durationMs = Date.now() - start;
-      console.error("[Cron] Email reminders job failed:", err?.message || err);
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("[Cron] Email reminders job failed:", message);
       logScheduler({
         jobName,
         request: { jobName, schedule: "0 9 * * *", timezone: "Europe/Amsterdam" },
-        response: { ok: false, durationMs, error: err?.message || String(err) },
-        analytics: { durationMs, error: err?.message || String(err) },
+        response: { ok: false, durationMs, error: message },
+        analytics: { durationMs, error: message },
       });
     }
   },
   { timezone: "Europe/Amsterdam" }
 );
 
-// Cron: every day at 9:00 NL time – send finish_listing to listing_applications created exactly 2 days ago
 cron.schedule(
   "0 9 * * *",
   async () => {
@@ -139,22 +131,22 @@ cron.schedule(
           durationMs,
         },
       });
-    } catch (err) {
+    } catch (err: unknown) {
       const durationMs = Date.now() - start;
-      console.error("[Cron] Finish application job failed:", err?.message || err);
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("[Cron] Finish application job failed:", message);
       logScheduler({
         jobName,
         request: { jobName, schedule: "0 9 * * *", timezone: "Europe/Amsterdam" },
-        response: { ok: false, durationMs, error: err?.message || String(err) },
-        analytics: { durationMs, error: err?.message || String(err) },
+        response: { ok: false, durationMs, error: message },
+        analytics: { durationMs, error: message },
       });
     }
   },
   { timezone: "Europe/Amsterdam" }
 );
 
-// Background Task
-async function App() {
+async function App(): Promise<void> {
   // sendNewRoomsForCriteriaToCitySubscribers("leeuwarden");
 }
 
