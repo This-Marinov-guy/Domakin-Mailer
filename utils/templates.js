@@ -10,3 +10,9 @@ export const NEW_ROOMS_FOR_CRITERIA_TEMPLATE = "dde7e699-3412-4b7c-b3ce-3518050b
 export const FINISH_LISTING_TEMPLATE = "e9a93603-ecde-467a-b54b-eb74b7ca5fec";
 
 export const LISTING_REMINDER_TEMPLATE = "78eaccd6-5e0e-4de1-a1de-d40a462b7bc9";
+
+// Listing status emails (set 1) – replace with your Mailtrap template UUIDs
+export const APPROVED_LISTING_TEMPLATE = "b0eb626a-9d16-444c-8c33-7ec7dcfae02a";
+export const SUBMITTED_LISTING_TEMPLATE = "6c273020-137e-4604-88eb-e1f9bef8e83d";
+export const INFO_NEEDED_TEMPLATE = "c836ff25-eeda-4188-8af4-6713f09acea8";
+export const REJECT_LISTING_TEMPLATE = "85569b3b-2a35-4577-98d2-7bca990cc1cf";

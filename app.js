@@ -13,11 +13,15 @@ import { fetchOneProperty } from "./controllers/property-controller.js";
 import { sendNewRoomsForCriteriaEmail, sendNewRoomsForCriteriaToCitySubscribers } from "./services/send-new-rooms-email.js";
 import { runEmailRemindersJob } from "./scheduler/email-reminders-job.js";
 import { runFinishApplicationJob } from "./scheduler/finish-application-job.js";
+import listingRoutes from "./routes/listing-routes.js";
+import roomRoutes from "./routes/room-routes.js";
+import reminderRoutes from "./routes/reminder-routes.js";
+import HttpError from "./models/Http-error.js";
 dotenv.config();
 
 const app = express();
 
-const PORT = process.env.PORT || 80; // Default to 80 if PORT is not set
+const PORT = process.env.PORT || 8080; // Default to 8080 if PORT is not set
 
 // Firewall
 app.set("trust proxy", true);
@@ -55,9 +59,19 @@ app.use((req, res, next) => {
 });
 
 app.use(axiomLogging);
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Server is running");
+});
+
+app.use("/api/listing", listingRoutes);
+app.use("/api/room", roomRoutes);
+app.use("/api/reminder", reminderRoutes);
+
+app.use((err, req, res, next) => {
+  const code = err.code && Number.isInteger(err.code) ? err.code : 500;
+  res.status(code).json({ ok: false, message: err.message || "Server error" });
 });
 
 app.listen(PORT, () => {
