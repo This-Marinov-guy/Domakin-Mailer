@@ -27,8 +27,9 @@ const PORT = Number(process.env.PORT) || 8080;
 app.set("trust proxy", true);
 
 if (app.get("env") !== "development") {
-  app.use(rateLimiter);
-  app.use(firewall);
+  // REMOVE unless public
+  // app.use(rateLimiter);
+  // app.use(firewall);
 } else {
   allowedOrigins.push("http://localhost:3000");
 }
