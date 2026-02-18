@@ -9,6 +9,6 @@ export function extractStreetName(address: string | null | undefined): string {
 
 /** progress_percent = 100 * step / 6, capped at 99 if 100. */
 export function progressPercentFromStep(step: number): number {
-  const p = Math.round((100 * step) / 6);
+  const p = Math.round((100 * step - 1) / 6);
   return p >= 100 ? 99 : p;
 }

@@ -22,7 +22,7 @@ const swaggerDocument = JSON.parse(readFileSync(openapiPath, "utf-8")) as Record
 
 const app = express();
 
-const PORT = Number(process.env.PORT) || 8080;
+const PORT = Number(process.env.PORT) || 6000;
 
 app.set("trust proxy", true);
 

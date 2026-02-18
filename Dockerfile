@@ -29,7 +29,7 @@ RUN chown -R node:node /usr/src/app
 USER node
 
 # Expose the port
-EXPOSE 8080
+EXPOSE 6000
 
 # Start with PM2
 
