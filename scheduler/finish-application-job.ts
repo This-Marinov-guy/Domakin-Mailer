@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { supabase } from "../utils/config.js";
 import { sendMarketingEmail } from "../services/email-transporter.js";
+import { fetchUnsubscribedEmailSet, isUnsubscribed } from "../services/unsubscribed-service.js";
 import { FINISH_LISTING_TEMPLATE } from "../utils/templates.js";
 import type { FinishApplicationJobResult } from "../types/index.js";
 import { progressPercentFromStep } from "../utils/helpers.js";
@@ -65,11 +66,16 @@ async function fetchApplicationsCreatedTwoDaysAgo(): Promise<ListingApplicationR
 }
 
 export async function runFinishApplicationJob(): Promise<FinishApplicationJobResult> {
-  const rows = await fetchApplicationsCreatedTwoDaysAgo();
+  const [rows, unsubscribedSet] = await Promise.all([
+    fetchApplicationsCreatedTwoDaysAgo(),
+    fetchUnsubscribedEmailSet(),
+  ]);
   let sent = 0;
   const errors: { id: number; email: string; error: string }[] = [];
 
   for (const row of rows) {
+    if (isUnsubscribed(row.email, unsubscribedSet)) continue;
+
     const templateVariables = {
       name: row.name,
       progress_percent: progressPercentFromStep(Number(row.step)),

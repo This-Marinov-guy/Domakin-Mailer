@@ -3,6 +3,7 @@ import { NEW_ROOMS_FOR_CRITERIA_TEMPLATE } from "../utils/templates.js";
 import { fetchOneProperty, fetchAllPropertiesWithLinkAndStatus2 } from "../controllers/property-controller.js";
 import { fetchWordpressPosts } from "../controllers/wordpress-controllers.js";
 import { getEmailsByCity } from "../utils/database.js";
+import { fetchUnsubscribedEmailSet, isUnsubscribed } from "./unsubscribed-service.js";
 import type { EmailReceiver } from "../types/index.js";
 import type { RoomEmailData } from "../types/index.js";
 import type { BlogPost } from "../types/index.js";
@@ -65,9 +66,10 @@ export async function sendNewRoomsForCriteriaToCitySubscribers(
   limitCity: string | null = null,
   language = "en"
 ): Promise<SendNewRoomsToCitySubscribersResult> {
-  const [properties, blogPostsRaw] = await Promise.all([
+  const [properties, blogPostsRaw, unsubscribedSet] = await Promise.all([
     fetchAllPropertiesWithLinkAndStatus2(language),
     fetchWordpressPosts(1, 100),
+    fetchUnsubscribedEmailSet(),
   ]);
   const blogPosts: BlogPost[] = (blogPostsRaw || []).map((p) => ({
     thumbnail: p.thumbnail,
@@ -85,6 +87,8 @@ export async function sendNewRoomsForCriteriaToCitySubscribers(
     const recipients = await getEmailsByCity(city);
 
     for (const recipient of recipients) {
+      if (isUnsubscribed(recipient.email, unsubscribedSet)) continue;
+
       const receiver: EmailReceiver = { email: recipient.email, id: String(recipient.id) };
       const templateVariables = buildTemplateVariablesForProperty(property, blogPosts, receiver);
 
