@@ -2,7 +2,8 @@ module.exports = {
   apps: [
     {
       name: "domakin-mailer",
-      script: "./app.ts",
+      script: "./dist/app.js",
+      interpreter: "node",
       env: {
         NODE_ENV: "prod",
         PORT: 8080,
