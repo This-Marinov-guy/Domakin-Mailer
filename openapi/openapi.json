@@ -1,0 +1,420 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Domakin Mailer API",
+    "description": "Email sending API for listing, room, and reminder templates.\n\n## Cron jobs\n\nScheduled jobs run automatically (Europe/Amsterdam):\n\n| Job | Schedule | Description |\n|-----|----------|-------------|\n| **email_reminders** | `0 9 * * *` (daily 09:00) | Process `email_reminders` table: send pending/failed reminders whose `scheduled_date` is today or in the past. |\n| **finish_application** | `0 9 * * *` (daily 09:00) | Send finish-listing emails to `listing_applications` created exactly 2 days ago (NL date). |\n\nUse `GET /api/scheduler` to retrieve the list and schedule of all cron jobs.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "/", "description": "Current host" }
+  ],
+  "paths": {
+    "/api/scheduler": {
+      "get": {
+        "tags": ["Scheduler"],
+        "summary": "List cron jobs",
+        "description": "Returns all scheduled cron jobs with name, cron expression, timezone, and description.",
+        "responses": {
+          "200": {
+            "description": "List of cron jobs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jobs": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/CronJob" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": { "description": "Server is running" }
+        }
+      }
+    },
+    "/api/listing/send-approved-listing": {
+      "post": {
+        "summary": "Send approved listing email",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "id": { "type": "string" },
+                  "name": { "type": "string" },
+                  "address": { "type": "string" },
+                  "city": { "type": "string" },
+                  "link": { "type": "string" },
+                  "blog_posts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": { "type": "string" },
+                        "image": { "type": "string" },
+                        "title": { "type": "string" },
+                        "excerpt": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email sent",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/api/listing/send-submitted-listing": {
+      "post": {
+        "summary": "Send submitted listing email",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "id": { "type": "string" },
+                  "name": { "type": "string" },
+                  "address": { "type": "string" },
+                  "city": { "type": "string" },
+                  "blog_posts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": { "type": "string" },
+                        "image": { "type": "string" },
+                        "title": { "type": "string" },
+                        "excerpt": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email sent",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/api/listing/send-info-needed": {
+      "post": {
+        "summary": "Send info needed email",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "id": { "type": "string" },
+                  "name": { "type": "string" },
+                  "address": { "type": "string" },
+                  "city": { "type": "string" },
+                  "specifications": {
+                    "type": "array",
+                    "items": {
+                      "oneOf": [
+                        { "type": "string" },
+                        { "type": "object", "properties": { "this": { "type": "string" } } }
+                      ]
+                    }
+                  },
+                  "blog_posts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": { "type": "string" },
+                        "image": { "type": "string" },
+                        "title": { "type": "string" },
+                        "excerpt": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email sent",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/api/listing/send-reject-listing": {
+      "post": {
+        "summary": "Send reject listing email",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "id": { "type": "string" },
+                  "name": { "type": "string" },
+                  "address": { "type": "string" },
+                  "city": { "type": "string" },
+                  "reason": { "type": "string" },
+                  "blog_posts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": { "type": "string" },
+                        "image": { "type": "string" },
+                        "title": { "type": "string" },
+                        "excerpt": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email sent",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/api/room/send-new-room": {
+      "post": {
+        "summary": "Send new room email",
+        "description": "Sends new-rooms email using property and blog data from DB.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "id": { "type": "string" },
+                  "language": { "type": "string", "enum": ["en", "nl"], "default": "en" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email sent",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/api/room/send-finish-application": {
+      "post": {
+        "summary": "Send finish application email",
+        "description": "progress_percent is computed as 100 * step / 6, capped at 99.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "id": { "type": "string" },
+                  "name": { "type": "string" },
+                  "address": { "type": "string" },
+                  "city": { "type": "string" },
+                  "step": { "type": "number", "description": "Step 0-6" },
+                  "link": { "type": "string" },
+                  "blog_posts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": { "type": "string" },
+                        "image": { "type": "string" },
+                        "title": { "type": "string" },
+                        "excerpt": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email sent",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/api/reminder/list-property": {
+      "post": {
+        "summary": "Send list property reminder email",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "id": { "type": "string" },
+                  "name": { "type": "string" },
+                  "city": { "type": "string" },
+                  "blog_posts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": { "type": "string" },
+                        "image": { "type": "string" },
+                        "title": { "type": "string" },
+                        "excerpt": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email sent",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CronJob": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "Job identifier" },
+          "schedule": { "type": "string", "description": "Cron expression (e.g. 0 9 * * *)" },
+          "timezone": { "type": "string", "example": "Europe/Amsterdam" },
+          "description": { "type": "string", "description": "What the job does" }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean", "example": true },
+          "message": { "type": "string" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean", "example": false },
+          "message": { "type": "string" }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request (e.g. missing email)",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Server error",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      }
+    }
+  }
+}

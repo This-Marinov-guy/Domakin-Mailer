@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
 import cron from "node-cron";
+import { readFileSync } from "fs";
+import { join } from "path";
+import swaggerUi from "swagger-ui-express";
 import { allowedOrigins } from "./utils/access.js";
 import { firewall, rateLimiter } from "./middleware/firewall.js";
 import { axiomLogging } from "./middleware/axiom-logging.js";
@@ -13,6 +16,9 @@ import HttpError from "./models/Http-error.js";
 import { runEmailRemindersJob } from "./scheduler/email-reminders-job.js";
 import { runFinishApplicationJob } from "./scheduler/finish-application-job.js";
 dotenv.config();
+
+const openapiPath = join(process.cwd(), "openapi", "openapi.json");
+const swaggerDocument = JSON.parse(readFileSync(openapiPath, "utf-8")) as Record<string, unknown>;
 
 const app = express();
 
@@ -56,6 +62,27 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Server is running");
+});
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+const cronJobs = [
+  {
+    name: "email_reminders",
+    schedule: "0 9 * * *",
+    timezone: "Europe/Amsterdam",
+    description: "Process email_reminders: send pending/failed reminders whose scheduled_date is today or in the past.",
+  },
+  {
+    name: "finish_application",
+    schedule: "0 9 * * *",
+    timezone: "Europe/Amsterdam",
+    description: "Send finish-listing emails to listing_applications created exactly 2 days ago (NL date).",
+  },
+];
+
+app.get("/api/scheduler", (req, res) => {
+  res.json({ jobs: cronJobs });
 });
 
 app.use("/api/listing", listingRoutes);
@@ -146,8 +173,8 @@ cron.schedule(
   { timezone: "Europe/Amsterdam" }
 );
 
-async function App(): Promise<void> {
-  // sendNewRoomsForCriteriaToCitySubscribers("leeuwarden");
-}
+// async function App(): Promise<void> {
+//   // sendNewRoomsForCriteriaToCitySubscribers("leeuwarden");
+// }
 
-App();
+// App();
