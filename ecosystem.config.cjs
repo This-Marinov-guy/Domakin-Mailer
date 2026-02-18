@@ -8,8 +8,8 @@ module.exports = {
         NODE_ENV: "prod",
         PORT: 8080,
       },
-      instances: 2, // Changed from "max" to 2
-      exec_mode: "cluster",
+      instances: 1,
+      exec_mode: "fork",
       max_memory_restart: "300M",
       error_file: "/usr/src/app/logs/error.log",
       out_file: "/usr/src/app/logs/out.log",
