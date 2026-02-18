@@ -2,10 +2,10 @@ module.exports = {
   apps: [
     {
       name: "domakin-mailer",
-      script: "./app.js",
+      script: "./app.ts",
       env: {
-        NODE_ENV: "production",
-        PORT: 6000,
+        NODE_ENV: "prod",
+        PORT: 8080,
       },
       instances: 2, // Changed from "max" to 2
       exec_mode: "cluster",
