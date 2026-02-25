@@ -64,6 +64,7 @@ export interface SendNewRoomsToCitySubscribersResult {
 
 export async function sendNewRoomsForCriteriaToCitySubscribers(
   limitCity: string | null = null,
+  limitInterface: string | null = null,
   language = "en"
 ): Promise<SendNewRoomsToCitySubscribersResult> {
   const [properties, blogPostsRaw, unsubscribedSet] = await Promise.all([
@@ -84,7 +85,7 @@ export async function sendNewRoomsForCriteriaToCitySubscribers(
     const city = property.room_city;
     if (!city || (limitCity && city.toLowerCase() !== limitCity.toLowerCase())) continue;
 
-    const recipients = await getEmailsByCity(city);
+    const recipients = await getEmailsByCity(city, limitInterface);
 
     for (const recipient of recipients) {
       if (isUnsubscribed(recipient.email, unsubscribedSet)) continue;

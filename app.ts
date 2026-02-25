@@ -15,6 +15,7 @@ import reminderRoutes from "./routes/reminder-routes.js";
 import HttpError from "./models/Http-error.js";
 import { runEmailRemindersJob } from "./scheduler/email-reminders-job.js";
 import { runFinishApplicationJob } from "./scheduler/finish-application-job.js";
+import { sendNewRoomsForCriteriaEmail, sendNewRoomsForCriteriaToCitySubscribers } from "./services/send-new-rooms-email.js";
 dotenv.config();
 
 const openapiPath = join(process.cwd(), "openapi", "openapi.json");
@@ -175,7 +176,7 @@ cron.schedule(
 );
 
 // async function App(): Promise<void> {
-//   // sendNewRoomsForCriteriaToCitySubscribers("leeuwarden");
+//   sendNewRoomsForCriteriaToCitySubscribers("rotterdam", 'web');
 // }
 
 // App();

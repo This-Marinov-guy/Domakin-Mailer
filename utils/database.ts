@@ -58,13 +58,18 @@ export const subscribedNewsletterClients = async ({
  * Returns all recipients (id, email) that have the given city in newsletters.cities or search_renting.
  */
 export const getEmailsByCity = async (
-  city: string
+  city: string,
+  interfaceName: string | null = null
 ): Promise<(NewsletterRow | SearchRentingRow)[]> => {
   if (!city || typeof city !== "string") return [];
 
-  const { data: searchRentingRows } = await supabase
+  let searchRentingQuery = supabase
     .from("search_rentings")
     .select("id, email, city");
+  if (interfaceName) {
+    searchRentingQuery = searchRentingQuery.eq("interface", interfaceName);
+  }
+  const { data: searchRentingRows } = await searchRentingQuery;
 
   const { data: newsletterRows } = await supabase
     .from("newsletters")
