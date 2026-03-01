@@ -3,6 +3,7 @@ import { NEW_ROOMS_FOR_CRITERIA_TEMPLATE } from "../utils/templates.js";
 import { fetchOneProperty, fetchAllPropertiesWithLinkAndStatus2 } from "../controllers/property-controller.js";
 import { fetchWordpressPosts } from "../controllers/wordpress-controllers.js";
 import { getEmailsByCity } from "../utils/database.js";
+import { SUBSCRIBER_EMAILS } from "../utils/emails.js";
 import { fetchUnsubscribedEmailSet, isUnsubscribed } from "./unsubscribed-service.js";
 import type { EmailReceiver } from "../types/index.js";
 import type { RoomEmailData } from "../types/index.js";
@@ -85,12 +86,24 @@ export async function sendNewRoomsForCriteriaToCitySubscribers(
     const city = property.room_city;
     if (!city || (limitCity && city.toLowerCase() !== limitCity.toLowerCase())) continue;
 
-    const recipients = await getEmailsByCity(city, limitInterface);
+    const cityRecipients = await getEmailsByCity(city, limitInterface);
+    const subscriberReceivers = SUBSCRIBER_EMAILS.map((email, i) => ({
+      email,
+      id: String(`subscriber-${i}`),
+    }));
+    const seenEmails = new Set(cityRecipients.map((r) => r.email.toLowerCase()));
+    const extraFromSubscribers = subscriberReceivers.filter(
+      (r) => !seenEmails.has(r.email.toLowerCase())
+    );
+    const recipients = [
+      ...cityRecipients.map((r) => ({ email: r.email, id: String(r.id) })),
+      ...extraFromSubscribers,
+    ];
 
     for (const recipient of recipients) {
       if (isUnsubscribed(recipient.email, unsubscribedSet)) continue;
 
-      const receiver: EmailReceiver = { email: recipient.email, id: String(recipient.id) };
+      const receiver: EmailReceiver = { email: recipient.email, id: recipient.id };
       const templateVariables = buildTemplateVariablesForProperty(property, blogPosts, receiver);
 
       try {
