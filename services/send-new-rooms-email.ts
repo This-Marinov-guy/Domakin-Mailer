@@ -60,6 +60,7 @@ export async function sendNewRoomsForCriteriaEmail(
 
 export interface SendNewRoomsToCitySubscribersResult {
   sent: number;
+  perRoom: { room_link: string; city: string; sent: number }[];
   errors: { email: string; error: string }[];
 }
 
@@ -78,22 +79,51 @@ export async function sendNewRoomsForCriteriaToCitySubscribers(
     title: p.title,
     url: p.url,
   }));
-
   let sent = 0;
+  const perRoom: { room_link: string; city: string; sent: number }[] = [];
   const errors: { email: string; error: string }[] = [];
+  let roomIndex = 0;
+
+  console.log(
+    "[NewRooms] Starting sendNewRoomsForCriteriaToCitySubscribers",
+    {
+      totalProperties: properties.length,
+      language,
+      limitCity: limitCity ?? "ALL",
+      limitInterface: limitInterface ?? "ALL",
+    }
+  );
 
   for (const property of properties) {
+    roomIndex += 1;
     const city = property.room_city;
-    if (!city || (limitCity && city.toLowerCase() !== limitCity.toLowerCase())) continue;
+    console.log(
+      `[NewRooms] [${roomIndex}/${properties.length}] Processing room`,
+      {
+        room_link: property.room_link,
+        city,
+      }
+    );
+    if (!city || (limitCity && city.toLowerCase() !== limitCity.toLowerCase())) {
+      console.log("[NewRooms] Skipping room due to city filter or missing city", {
+        room_link: property.room_link,
+        city,
+      });
+      continue;
+    }
+
+    let roomSent = 0;
 
     const cityRecipients = await getEmailsByCity(city, limitInterface);
     const subscriberReceivers = SUBSCRIBER_EMAILS.map((email, i) => ({
       email,
       id: String(`subscriber-${i}`),
     }));
-    const seenEmails = new Set(cityRecipients.map((r) => r.email.toLowerCase()));
-    const extraFromSubscribers = subscriberReceivers.filter(
-      (r) => !seenEmails.has(r.email.toLowerCase())
+    const seenEmails = new Set(
+      cityRecipients.map((r: { email: string }) => r.email.toLowerCase())
+    );
+    const extraFromSubscribers = subscriberReceivers.filter((r: { email: string }) =>
+      !seenEmails.has(r.email.toLowerCase())
     );
     const recipients = [
       ...cityRecipients.map((r) => ({ email: r.email, id: String(r.id) })),
@@ -109,6 +139,7 @@ export async function sendNewRoomsForCriteriaToCitySubscribers(
       try {
         await sendMarketingEmail(NEW_ROOMS_FOR_CRITERIA_TEMPLATE, receiver, templateVariables);
         sent += 1;
+        roomSent += 1;
       } catch (err: unknown) {
         errors.push({
           email: receiver.email,
@@ -116,7 +147,27 @@ export async function sendNewRoomsForCriteriaToCitySubscribers(
         });
       }
     }
+
+    perRoom.push({
+      room_link: property.room_link,
+      city,
+      sent: roomSent,
+    });
+
+    console.log("[NewRooms] Finished room", {
+      room_link: property.room_link,
+      city,
+      sentForRoom: roomSent,
+      totalSentSoFar: sent,
+    });
   }
 
-  return { sent, errors };
+  console.log("[NewRooms] Finished sendNewRoomsForCriteriaToCitySubscribers", {
+    totalSent: sent,
+    roomsWithEmails: perRoom.length,
+    totalProperties: properties.length,
+    errorsCount: errors.length,
+  });
+
+  return { sent, perRoom, errors };
 }

@@ -176,6 +176,6 @@ cron.schedule(
 );
 
 // async function App(): Promise<void> {
-//   sendNewRoomsForCriteriaToCitySubscribers("rotterdam", "web");
+//   sendNewRoomsForCriteriaToCitySubscribers("amsterdam", "web");
 // }
 // App();
