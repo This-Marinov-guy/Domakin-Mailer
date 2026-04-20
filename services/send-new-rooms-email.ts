@@ -13,6 +13,8 @@ import type { EmailReceiver } from "../types/index.js";
 import type { RoomEmailData } from "../types/index.js";
 import type { BlogPost } from "../types/index.js";
 
+const INTERNAL_CAMPAIGN_RECIPIENT = "info@domakin.nl";
+
 function buildTemplateVariablesForProperty(
   property: RoomEmailData,
   blogPosts: BlogPost[],
@@ -73,6 +75,47 @@ export interface SendNewRoomsForPropertyResult {
   city: string;
   room_link: string;
   errors: { email: string; error: string }[];
+}
+
+export interface SendNewRoomsForPropertyPreviewResult {
+  total_recipients: number;
+  city: string;
+  room_link: string;
+  includes_internal_recipient: boolean;
+}
+
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+async function getRecipientsForPropertyCampaign(
+  city: string,
+  unsubscribedSet: Set<string>
+): Promise<EmailReceiver[]> {
+  const recipients = await getEmailsByCity(city);
+  const byEmail = new Map<string, EmailReceiver>();
+
+  for (const recipient of recipients) {
+    if (!recipient.email || typeof recipient.email !== "string") continue;
+
+    const normalizedEmail = normalizeEmail(recipient.email);
+    if (!normalizedEmail) continue;
+    if (isUnsubscribed(normalizedEmail, unsubscribedSet)) continue;
+
+    byEmail.set(normalizedEmail, {
+      email: recipient.email.trim(),
+      id: String(recipient.id),
+    });
+  }
+
+  if (!byEmail.has(INTERNAL_CAMPAIGN_RECIPIENT)) {
+    byEmail.set(INTERNAL_CAMPAIGN_RECIPIENT, {
+      email: INTERNAL_CAMPAIGN_RECIPIENT,
+      id: "internal-info",
+    });
+  }
+
+  return Array.from(byEmail.values());
 }
 
 export async function sendNewRoomsForCriteriaToCitySubscribers(
@@ -207,14 +250,12 @@ export async function sendNewRoomsForCriteriaForProperty(
     url: p.url,
   }));
 
-  const recipients = await getEmailsByCity(property.room_city);
+  const recipients = await getRecipientsForPropertyCampaign(property.room_city, unsubscribedSet);
 
   let sent = 0;
   const errors: { email: string; error: string }[] = [];
 
   for (const recipient of recipients) {
-    if (isUnsubscribed(recipient.email, unsubscribedSet)) continue;
-
     const receiver: EmailReceiver = { email: recipient.email, id: String(recipient.id) };
     const templateVariables = buildTemplateVariablesForProperty(property, blogPosts, receiver);
 
@@ -234,5 +275,32 @@ export async function sendNewRoomsForCriteriaForProperty(
     city: property.room_city,
     room_link: property.room_link,
     errors,
+  };
+}
+
+export async function previewNewRoomsForCriteriaForProperty(
+  propertyId: string | number,
+  language = "en"
+): Promise<SendNewRoomsForPropertyPreviewResult> {
+  const [property, unsubscribedSet] = await Promise.all([
+    fetchPropertyByIdWithLink(String(propertyId), language),
+    fetchUnsubscribedEmailSet(),
+  ]);
+
+  if (!property.room_city) {
+    throw new Error("Property city is missing");
+  }
+
+  if (!property.room_link) {
+    throw new Error("Property link is missing");
+  }
+
+  const recipients = await getRecipientsForPropertyCampaign(property.room_city, unsubscribedSet);
+
+  return {
+    total_recipients: recipients.length,
+    city: property.room_city,
+    room_link: property.room_link,
+    includes_internal_recipient: true,
   };
 }

@@ -3,6 +3,7 @@ import HttpError from "../models/Http-error.js";
 import { sendMarketingEmail } from "../services/email-transporter.js";
 import {
   sendNewRoomsForCriteriaEmail,
+  previewNewRoomsForCriteriaForProperty,
   sendNewRoomsForCriteriaForProperty,
 } from "../services/send-new-rooms-email.js";
 import { FINISH_LISTING_TEMPLATE } from "../utils/templates.js";
@@ -89,6 +90,34 @@ export async function sendNewRoomToCitySubscribersForProperty(
     res.json({
       ok: true,
       message: "New room campaign sent",
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function previewNewRoomToCitySubscribersForProperty(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const propertyIdRaw = req.body?.property_id;
+    const propertyId = typeof propertyIdRaw === "number" || typeof propertyIdRaw === "string"
+      ? Number(propertyIdRaw)
+      : NaN;
+
+    if (!Number.isInteger(propertyId) || propertyId <= 0) {
+      throw new HttpError("Missing or invalid property_id", 400);
+    }
+
+    const language = (req.body?.language as string | undefined) ?? "en";
+    const result = await previewNewRoomsForCriteriaForProperty(propertyId, language);
+
+    res.json({
+      ok: true,
+      message: "New room campaign preview generated",
       data: result,
     });
   } catch (err) {
