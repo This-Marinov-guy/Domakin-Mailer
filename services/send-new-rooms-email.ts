@@ -1,6 +1,10 @@
 import { sendMarketingEmail } from "./email-transporter.js";
 import { NEW_ROOMS_FOR_CRITERIA_TEMPLATE } from "../utils/templates.js";
-import { fetchOneProperty, fetchAllPropertiesWithLinkAndStatus2 } from "../controllers/property-controller.js";
+import {
+  fetchOneProperty,
+  fetchAllPropertiesWithLinkAndStatus2,
+  fetchPropertyByIdWithLink,
+} from "../controllers/property-controller.js";
 import { fetchWordpressPosts } from "../controllers/wordpress-controllers.js";
 import { getEmailsByCity } from "../utils/database.js";
 import { SUBSCRIBER_EMAILS } from "../utils/emails.js";
@@ -61,6 +65,13 @@ export async function sendNewRoomsForCriteriaEmail(
 export interface SendNewRoomsToCitySubscribersResult {
   sent: number;
   perRoom: { room_link: string; city: string; sent: number }[];
+  errors: { email: string; error: string }[];
+}
+
+export interface SendNewRoomsForPropertyResult {
+  sent: number;
+  city: string;
+  room_link: string;
   errors: { email: string; error: string }[];
 }
 
@@ -170,4 +181,58 @@ export async function sendNewRoomsForCriteriaToCitySubscribers(
   });
 
   return { sent, perRoom, errors };
+}
+
+export async function sendNewRoomsForCriteriaForProperty(
+  propertyId: string | number,
+  language = "en"
+): Promise<SendNewRoomsForPropertyResult> {
+  const [property, blogPostsRaw, unsubscribedSet] = await Promise.all([
+    fetchPropertyByIdWithLink(String(propertyId), language),
+    fetchWordpressPosts(1, 100),
+    fetchUnsubscribedEmailSet(),
+  ]);
+
+  if (!property.room_city) {
+    throw new Error("Property city is missing");
+  }
+
+  if (!property.room_link) {
+    throw new Error("Property link is missing");
+  }
+
+  const blogPosts: BlogPost[] = (blogPostsRaw || []).map((p) => ({
+    thumbnail: p.thumbnail,
+    title: p.title,
+    url: p.url,
+  }));
+
+  const recipients = await getEmailsByCity(property.room_city);
+
+  let sent = 0;
+  const errors: { email: string; error: string }[] = [];
+
+  for (const recipient of recipients) {
+    if (isUnsubscribed(recipient.email, unsubscribedSet)) continue;
+
+    const receiver: EmailReceiver = { email: recipient.email, id: String(recipient.id) };
+    const templateVariables = buildTemplateVariablesForProperty(property, blogPosts, receiver);
+
+    try {
+      await sendMarketingEmail(NEW_ROOMS_FOR_CRITERIA_TEMPLATE, receiver, templateVariables);
+      sent += 1;
+    } catch (err: unknown) {
+      errors.push({
+        email: receiver.email,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
+
+  return {
+    sent,
+    city: property.room_city,
+    room_link: property.room_link,
+    errors,
+  };
 }

@@ -1,7 +1,10 @@
 import type { Request, Response, NextFunction } from "express";
 import HttpError from "../models/Http-error.js";
 import { sendMarketingEmail } from "../services/email-transporter.js";
-import { sendNewRoomsForCriteriaEmail } from "../services/send-new-rooms-email.js";
+import {
+  sendNewRoomsForCriteriaEmail,
+  sendNewRoomsForCriteriaForProperty,
+} from "../services/send-new-rooms-email.js";
 import { FINISH_LISTING_TEMPLATE } from "../utils/templates.js";
 import { progressPercentFromStep } from "../utils/helpers.js";
 
@@ -60,6 +63,34 @@ export async function sendFinishApplication(req: Request, res: Response, next: N
     };
     await sendMarketingEmail(FINISH_LISTING_TEMPLATE, { email, id }, templateVariables);
     res.json({ ok: true, message: "Finish application email sent" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function sendNewRoomToCitySubscribersForProperty(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const propertyIdRaw = req.body?.property_id;
+    const propertyId = typeof propertyIdRaw === "number" || typeof propertyIdRaw === "string"
+      ? Number(propertyIdRaw)
+      : NaN;
+
+    if (!Number.isInteger(propertyId) || propertyId <= 0) {
+      throw new HttpError("Missing or invalid property_id", 400);
+    }
+
+    const language = (req.body?.language as string | undefined) ?? "en";
+    const result = await sendNewRoomsForCriteriaForProperty(propertyId, language);
+
+    res.json({
+      ok: true,
+      message: "New room campaign sent",
+      data: result,
+    });
   } catch (err) {
     next(err);
   }

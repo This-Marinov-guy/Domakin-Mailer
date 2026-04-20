@@ -30,6 +30,38 @@ export const fetchPropertyById = async (
   };
 };
 
+export const fetchPropertyByIdWithLink = async (
+  id: string,
+  language = "en"
+): Promise<RoomEmailData> => {
+  if (!id) throw new Error("No property id provided");
+
+  const { data, error } = await supabase
+    .from("properties")
+    .select("link, property_data(id, title, city, address, rent, flatmates, period, images)")
+    .eq("id", id)
+    .single();
+
+  if (error || !data) throw new Error(error?.message || "Failed to fetch property");
+
+  const pd = Array.isArray(data.property_data) ? data.property_data[0] : data.property_data;
+
+  if (!pd) {
+    throw new Error("Property data not found");
+  }
+
+  return {
+    room_title: pd.title?.[language],
+    room_city: pd.city,
+    room_location: extractStreetName(pd.address),
+    room_rent: pd.rent,
+    room_period: pd.period?.[language],
+    room_flatmates: pd.flatmates?.[language],
+    room_image_src: (pd.images || "").split(",")[0],
+    room_link: (data as Record<string, unknown>).link as string,
+  };
+};
+
 export const fetchOneProperty = async (language = "en"): Promise<RoomEmailData> => {
   const { data, error } = await supabase
     .from("properties")

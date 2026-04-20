@@ -91,7 +91,7 @@ app.use("/api/listing", listingRoutes);
 app.use("/api/room", roomRoutes);
 app.use("/api/reminder", reminderRoutes);
 
-app.use((err: HttpError & { code?: number }, req: express.Request, res: express.Response) => {
+app.use((err: HttpError & { code?: number }, req: express.Request, res: express.Response, next: express.NextFunction) => {
   const code = err.code && Number.isInteger(err.code) ? err.code : 500;
   res.status(code).json({ ok: false, message: err.message || "Server error" });
 });
@@ -176,6 +176,6 @@ cron.schedule(
 );
 
 // async function App(): Promise<void> {
-//   sendNewRoomsForCriteriaToCitySubscribers("amsterdam", "web");
+//   sendNewRoomsForCriteriaToCitySubscribers('The Hague');
 // }
 // App();
