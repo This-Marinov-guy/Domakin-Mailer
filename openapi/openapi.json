@@ -278,7 +278,7 @@
     "/api/room/send-finish-application": {
       "post": {
         "summary": "Send finish application email",
-        "description": "progress_percent is computed as 100 * step / 6, capped at 99.",
+        "description": "progress_percent is computed as 100 * step / 6, capped at 99. Provide link directly, or provide reference_id so the mailer can build the continue-listing URL.",
         "requestBody": {
           "required": true,
           "content": {
@@ -293,7 +293,8 @@
                   "address": { "type": "string" },
                   "city": { "type": "string" },
                   "step": { "type": "number", "description": "Step 0-6" },
-                  "link": { "type": "string" },
+                  "reference_id": { "type": "string", "description": "Listing application reference UUID used to build the continue URL when link is omitted" },
+                  "link": { "type": "string", "description": "Direct continue-listing URL. If omitted, reference_id must be present." },
                   "blog_posts": {
                     "type": "array",
                     "items": {

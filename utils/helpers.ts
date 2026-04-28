@@ -12,3 +12,17 @@ export function progressPercentFromStep(step: number): number {
   const p = Math.round((100 * step - 1) / 6);
   return p >= 100 ? 99 : p;
 }
+
+const DEFAULT_FINISH_LISTING_URL = "https://domakin.nl/services/add-listing";
+
+export function resolveFinishListingUrl(link: unknown, referenceId?: unknown): string {
+  if (typeof link === "string" && link.trim()) {
+    return link.trim();
+  }
+
+  if (typeof referenceId === "string" && referenceId.trim()) {
+    return `${DEFAULT_FINISH_LISTING_URL}?reference_id=${encodeURIComponent(referenceId.trim())}`;
+  }
+
+  return "";
+}

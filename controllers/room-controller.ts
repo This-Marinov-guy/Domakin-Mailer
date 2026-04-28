@@ -7,7 +7,7 @@ import {
   sendNewRoomsForCriteriaForProperty,
 } from "../services/send-new-rooms-email.js";
 import { FINISH_LISTING_TEMPLATE } from "../utils/templates.js";
-import { progressPercentFromStep } from "../utils/helpers.js";
+import { progressPercentFromStep, resolveFinishListingUrl } from "../utils/helpers.js";
 
 function requireEmail(body: Record<string, unknown>): string {
   const email = body?.email;
@@ -46,13 +46,17 @@ export async function sendFinishApplication(req: Request, res: Response, next: N
     const body = req.body as Record<string, unknown>;
     const email = requireEmail(body);
     const id = (body.id as string | undefined) ?? "";
+    const reference_id = typeof body.reference_id === "string" ? body.reference_id : "";
     const name = typeof body.name === "string" ? body.name : "";
     const address = typeof body.address === "string" ? body.address : "";
     const city = typeof body.city === "string" ? body.city : "";
     const stepRaw = body.step;
     const step = typeof stepRaw === "number" && Number.isFinite(stepRaw) ? stepRaw : Number(stepRaw) || 0;
     const progress_percent = progressPercentFromStep(step);
-    const link = typeof body.link === "string" ? body.link : "";
+    const link = resolveFinishListingUrl(body.link, reference_id);
+    if (!link) {
+      throw new HttpError("Missing finish listing link or reference_id", 400);
+    }
     const blog_posts = parseBlogPosts(body.blog_posts);
     const templateVariables: Record<string, unknown> = {
       name,
@@ -60,6 +64,7 @@ export async function sendFinishApplication(req: Request, res: Response, next: N
       city,
       progress_percent,
       link,
+      continue_listing_url: link,
       blog_posts,
     };
     await sendMarketingEmail(FINISH_LISTING_TEMPLATE, { email, id }, templateVariables);

@@ -4,7 +4,7 @@ import { sendMarketingEmail } from "../services/email-transporter.js";
 import { fetchUnsubscribedEmailSet, isUnsubscribed } from "../services/unsubscribed-service.js";
 import { FINISH_LISTING_TEMPLATE } from "../utils/templates.js";
 import type { FinishApplicationJobResult } from "../types/index.js";
-import { progressPercentFromStep } from "../utils/helpers.js";
+import { progressPercentFromStep, resolveFinishListingUrl } from "../utils/helpers.js";
 
 const NL_FORMAT: Intl.DateTimeFormatOptions = {
   timeZone: "Europe/Amsterdam",
@@ -41,6 +41,7 @@ function getDateNLFromISO(isoString: string): string {
 
 interface ListingApplicationRow {
   id: number;
+  reference_id: string;
   name: string;
   step: string;
   email: string;
@@ -55,7 +56,7 @@ async function fetchApplicationsCreatedTwoDaysAgo(): Promise<ListingApplicationR
 
   const { data, error } = await supabase
     .from("listing_applications")
-    .select("id, name, step, email, city, address, created_at")
+    .select("id, reference_id, name, step, email, city, address, created_at")
     .gte("created_at", windowStart);
 
   if (error) throw new Error(error.message || "Failed to fetch listing_applications");
@@ -75,6 +76,15 @@ export async function runFinishApplicationJob(): Promise<FinishApplicationJobRes
 
   for (const row of rows) {
     if (isUnsubscribed(row.email, unsubscribedSet)) continue;
+    const link = resolveFinishListingUrl(undefined, row.reference_id);
+    if (!link) {
+      errors.push({
+        id: row.id,
+        email: row.email,
+        error: "Missing finish listing link",
+      });
+      continue;
+    }
 
     const templateVariables = {
       name: row.name,
@@ -82,6 +92,8 @@ export async function runFinishApplicationJob(): Promise<FinishApplicationJobRes
       email: row.email,
       city: row.city,
       address: row.address,
+      link,
+      continue_listing_url: link,
     };
 
     try {
