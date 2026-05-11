@@ -47,3 +47,15 @@ export interface SearchRentingRow {
   email: string;
   city: string;
 }
+
+export interface RentingRow {
+  id: string | number;
+  email: string;
+}
+
+export interface BroadcastResult {
+  sent: number;
+  skipped_unsubscribed: number;
+  total_recipients: number;
+  errors: { email: string; error: string }[];
+}

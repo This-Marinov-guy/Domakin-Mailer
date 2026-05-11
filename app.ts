@@ -12,6 +12,7 @@ import dotenv from "dotenv";
 import listingRoutes from "./routes/listing-routes.js";
 import roomRoutes from "./routes/room-routes.js";
 import reminderRoutes from "./routes/reminder-routes.js";
+import broadcastRoutes from "./routes/broadcast-routes.js";
 import HttpError from "./models/Http-error.js";
 import { runEmailRemindersJob } from "./scheduler/email-reminders-job.js";
 import { runFinishApplicationJob } from "./scheduler/finish-application-job.js";
@@ -90,6 +91,7 @@ app.get("/api/scheduler", (req, res) => {
 app.use("/api/listing", listingRoutes);
 app.use("/api/room", roomRoutes);
 app.use("/api/reminder", reminderRoutes);
+app.use("/api/broadcast", broadcastRoutes);
 
 app.use((err: HttpError & { code?: number }, req: express.Request, res: express.Response, next: express.NextFunction) => {
   const code = err.code && Number.isInteger(err.code) ? err.code : 500;

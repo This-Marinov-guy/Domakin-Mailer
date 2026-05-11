@@ -1,5 +1,5 @@
 import { supabase } from "./config.js";
-import type { NewsletterRow, SearchRentingRow } from "../types/index.js";
+import type { NewsletterRow, RentingRow, SearchRentingRow } from "../types/index.js";
 
 export const subscribedNewsletterClients = async ({
   cities = [],
@@ -87,4 +87,45 @@ export const getEmailsByCity = async (
   fromNewsletters.forEach((r) => byEmail.set(r.email.toLowerCase(), r));
   fromSearchRenting.forEach((r) => byEmail.set(r.email.toLowerCase(), r));
   return Array.from(byEmail.values());
+};
+
+export const getAllSearchRentingEmails = async (): Promise<SearchRentingRow[]> => {
+  const { data, error } = await supabase
+    .from("search_rentings")
+    .select("id, email, city");
+  if (error) throw new Error(error.message || "Failed to fetch search_rentings");
+  return (data ?? []) as SearchRentingRow[];
+};
+
+export const getSearchRentingEmailsCreatedBefore = async (
+  isoDate: string
+): Promise<SearchRentingRow[]> => {
+  const { data, error } = await supabase
+    .from("search_rentings")
+    .select("id, email, city")
+    .lt("created_at", isoDate);
+  if (error) throw new Error(error.message || "Failed to fetch search_rentings");
+  return (data ?? []) as SearchRentingRow[];
+};
+
+export const getRentingEmailsCreatedBefore = async (
+  isoDate: string
+): Promise<RentingRow[]> => {
+  const { data, error } = await supabase
+    .from("rentings")
+    .select("id, email")
+    .lt("created_at", isoDate);
+  if (error) throw new Error(error.message || "Failed to fetch rentings");
+  return (data ?? []) as RentingRow[];
+};
+
+export const getNewsletterEmailsBeforeYear = async (
+  year: number
+): Promise<NewsletterRow[]> => {
+  const { data, error } = await supabase
+    .from("newsletters")
+    .select("id, email, cities, language, created_at, year")
+    .lt("year", year);
+  if (error) throw new Error(error.message || "Failed to fetch newsletters");
+  return (data ?? []) as NewsletterRow[];
 };

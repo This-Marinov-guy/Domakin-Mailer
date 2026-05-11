@@ -15,3 +15,6 @@ export const APPROVED_LISTING_TEMPLATE: string = "b0eb626a-9d16-444c-8c33-7ec7dc
 export const SUBMITTED_LISTING_TEMPLATE: string = "6c273020-137e-4604-88eb-e1f9bef8e83d";
 export const INFO_NEEDED_TEMPLATE: string = "c836ff25-eeda-4188-8af4-6713f09acea8";
 export const REJECT_LISTING_TEMPLATE: string = "85569b3b-2a35-4577-98d2-7bca990cc1cf";
+
+export const REMOTE_VIEWING_BG: string = "74b335e7-98e0-446a-b081-d93ebd79a6b9";
+export const REMOTE_VIEWING_EN: string = "4bf88874-dc03-452a-9bd1-b9b2e5596d65";
