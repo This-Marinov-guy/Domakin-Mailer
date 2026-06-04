@@ -1,4 +1,4 @@
-import { supabase } from "./config.js";
+import { supabase, supabaseAdmin } from "./config.js";
 import type { NewsletterRow, RentingRow, SearchRentingRow } from "../types/index.js";
 
 export const subscribedNewsletterClients = async ({
@@ -117,6 +117,37 @@ export const getRentingEmailsCreatedBefore = async (
     .lt("created_at", isoDate);
   if (error) throw new Error(error.message || "Failed to fetch rentings");
   return (data ?? []) as RentingRow[];
+};
+
+/**
+ * Returns every registered Supabase Auth user's (id, email).
+ * Uses the service-role admin client and paginates through all users.
+ */
+export const getAllAuthUserEmails = async (): Promise<
+  { id: string; email: string }[]
+> => {
+  const perPage = 1000;
+  let page = 1;
+  const rows: { id: string; email: string }[] = [];
+
+  for (;;) {
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({
+      page,
+      perPage,
+    });
+    if (error) throw new Error(error.message || "Failed to list auth users");
+
+    const users = data?.users ?? [];
+    for (const user of users) {
+      if (!user.email) continue;
+      rows.push({ id: user.id, email: user.email });
+    }
+
+    if (users.length < perPage) break;
+    page += 1;
+  }
+
+  return rows;
 };
 
 export const getNewsletterEmailsBeforeYear = async (

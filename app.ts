@@ -16,11 +16,17 @@ import broadcastRoutes from "./routes/broadcast-routes.js";
 import HttpError from "./models/Http-error.js";
 import { runEmailRemindersJob } from "./scheduler/email-reminders-job.js";
 import { runFinishApplicationJob } from "./scheduler/finish-application-job.js";
-import { sendNewRoomsForCriteriaEmail, sendNewRoomsForCriteriaToCitySubscribers } from "./services/send-new-rooms-email.js";
+import {
+  sendNewRoomsForCriteriaEmail,
+  sendNewRoomsForCriteriaToCitySubscribers,
+} from "./services/send-new-rooms-email.js";
+import { sendListRoomToPreCurrentYear, sendRemoteViewingToSearchRentings, sendRemoteViewingToUsers } from "./services/send-broadcast-email.js";
 dotenv.config();
 
 const openapiPath = join(process.cwd(), "openapi", "openapi.json");
-const swaggerDocument = JSON.parse(readFileSync(openapiPath, "utf-8")) as Record<string, unknown>;
+const swaggerDocument = JSON.parse(
+  readFileSync(openapiPath, "utf-8"),
+) as Record<string, unknown>;
 
 const app = express();
 
@@ -38,19 +44,22 @@ if (app.get("env") !== "development") {
 
 app.use(
   cors({
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(
           new HttpError(
             "There was a problem with your request, please try again later!",
-            403
-          )
+            403,
+          ),
         );
       }
     },
-  })
+  }),
 );
 
 app.use((req, res, next) => {
@@ -74,13 +83,15 @@ const cronJobs = [
     name: "email_reminders",
     schedule: "0 9 * * *",
     timezone: "Europe/Amsterdam",
-    description: "Process email_reminders: send pending/failed reminders whose scheduled_date is today or in the past.",
+    description:
+      "Process email_reminders: send pending/failed reminders whose scheduled_date is today or in the past.",
   },
   {
     name: "finish_application",
     schedule: "0 9 * * *",
     timezone: "Europe/Amsterdam",
-    description: "Send finish-listing emails to listing_applications created exactly 2 days ago (NL date).",
+    description:
+      "Send finish-listing emails to listing_applications created exactly 2 days ago (NL date).",
   },
 ];
 
@@ -93,10 +104,19 @@ app.use("/api/room", roomRoutes);
 app.use("/api/reminder", reminderRoutes);
 app.use("/api/broadcast", broadcastRoutes);
 
-app.use((err: HttpError & { code?: number }, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const code = err.code && Number.isInteger(err.code) ? err.code : 500;
-  res.status(code).json({ ok: false, message: err.message || "Server error" });
-});
+app.use(
+  (
+    err: HttpError & { code?: number },
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const code = err.code && Number.isInteger(err.code) ? err.code : 500;
+    res
+      .status(code)
+      .json({ ok: false, message: err.message || "Server error" });
+  },
+);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -115,7 +135,11 @@ cron.schedule(
       if (result.errors?.length) console.error("[Cron] Errors:", result.errors);
       logScheduler({
         jobName,
-        request: { jobName, schedule: "0 9 * * *", timezone: "Europe/Amsterdam" },
+        request: {
+          jobName,
+          schedule: "0 9 * * *",
+          timezone: "Europe/Amsterdam",
+        },
         response: { ok: true, durationMs },
         analytics: {
           processed: result.processed,
@@ -131,13 +155,17 @@ cron.schedule(
       console.error("[Cron] Email reminders job failed:", message);
       logScheduler({
         jobName,
-        request: { jobName, schedule: "0 9 * * *", timezone: "Europe/Amsterdam" },
+        request: {
+          jobName,
+          schedule: "0 9 * * *",
+          timezone: "Europe/Amsterdam",
+        },
         response: { ok: false, durationMs, error: message },
         analytics: { durationMs, error: message },
       });
     }
   },
-  { timezone: "Europe/Amsterdam" }
+  { timezone: "Europe/Amsterdam" },
 );
 
 cron.schedule(
@@ -153,7 +181,11 @@ cron.schedule(
       if (result.errors?.length) console.error("[Cron] Errors:", result.errors);
       logScheduler({
         jobName,
-        request: { jobName, schedule: "0 9 * * *", timezone: "Europe/Amsterdam" },
+        request: {
+          jobName,
+          schedule: "0 9 * * *",
+          timezone: "Europe/Amsterdam",
+        },
         response: { ok: true, durationMs },
         analytics: {
           processed: result.processed,
@@ -168,16 +200,22 @@ cron.schedule(
       console.error("[Cron] Finish application job failed:", message);
       logScheduler({
         jobName,
-        request: { jobName, schedule: "0 9 * * *", timezone: "Europe/Amsterdam" },
+        request: {
+          jobName,
+          schedule: "0 9 * * *",
+          timezone: "Europe/Amsterdam",
+        },
         response: { ok: false, durationMs, error: message },
         analytics: { durationMs, error: message },
       });
     }
   },
-  { timezone: "Europe/Amsterdam" }
+  { timezone: "Europe/Amsterdam" },
 );
 
 // async function App(): Promise<void> {
-//   sendNewRoomsForCriteriaToCitySubscribers('The Hague');
+//   await sendRemoteViewingToSearchRentings();
+//   await sendRemoteViewingToUsers();
+//   await sendListRoomToPreCurrentYear();
 // }
 // App();

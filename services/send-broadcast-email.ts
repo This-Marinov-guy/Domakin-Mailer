@@ -5,6 +5,7 @@ import {
   getSearchRentingEmailsCreatedBefore,
   getRentingEmailsCreatedBefore,
   getNewsletterEmailsBeforeYear,
+  getAllAuthUserEmails,
 } from "../utils/database.js";
 import { DOMAKIN_LIST_ROOM_EN, REMOTE_VIEWING_EN } from "../utils/templates.js";
 import type { BroadcastResult, EmailReceiver } from "../types/index.js";
@@ -99,6 +100,22 @@ export async function sendRemoteViewingToSearchRentings(): Promise<BroadcastResu
   });
 
   return sendBroadcast(REMOTE_VIEWING_EN, recipients, "remote-viewing");
+}
+
+export async function sendRemoteViewingToUsers(
+  templateId: string = REMOTE_VIEWING_EN
+): Promise<BroadcastResult> {
+  const rows = await getAllAuthUserEmails();
+  const byEmail = new Map<string, EmailReceiver>();
+  collectUnique(rows, byEmail);
+  const recipients = Array.from(byEmail.values());
+
+  console.log("[Broadcast] sendRemoteViewingToUsers", {
+    templateId,
+    totalRecipients: recipients.length,
+  });
+
+  return sendBroadcast(templateId, recipients, "all-auth-users");
 }
 
 export async function sendListRoomToPreCurrentYear(): Promise<BroadcastResult> {
