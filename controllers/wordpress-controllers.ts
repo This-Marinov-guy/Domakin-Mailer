@@ -63,6 +63,7 @@ export const fetchWordpressPosts = async (
       url: DOMAKIN_BLOG_URL + (p.id as number) + "/" + slug,
       thumbnail: firstImageSrc,
       title,
+      excerpt: description,
     };
   });
 

@@ -18,6 +18,7 @@ export interface BlogPost {
   thumbnail: string | null;
   title: string;
   url: string;
+  excerpt?: string;
 }
 
 export interface EmailRemindersJobResult {

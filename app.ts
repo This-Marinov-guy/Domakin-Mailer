@@ -13,6 +13,7 @@ import listingRoutes from "./routes/listing-routes.js";
 import roomRoutes from "./routes/room-routes.js";
 import reminderRoutes from "./routes/reminder-routes.js";
 import broadcastRoutes from "./routes/broadcast-routes.js";
+import viewingRoutes from "./routes/viewing-routes.js";
 import HttpError from "./models/Http-error.js";
 import { runEmailRemindersJob } from "./scheduler/email-reminders-job.js";
 import { runFinishApplicationJob } from "./scheduler/finish-application-job.js";
@@ -103,6 +104,7 @@ app.use("/api/listing", listingRoutes);
 app.use("/api/room", roomRoutes);
 app.use("/api/reminder", reminderRoutes);
 app.use("/api/broadcast", broadcastRoutes);
+app.use("/api/viewing", viewingRoutes);
 
 app.use(
   (
