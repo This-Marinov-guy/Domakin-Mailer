@@ -3,8 +3,12 @@ import HttpError from "../models/Http-error.js";
 import { sendMarketingEmail } from "../services/email-transporter.js";
 import { fetchWordpressPosts } from "./wordpress-controllers.js";
 import {
+  APPROVED_VIEWING_BG,
+  APPROVED_VIEWING_EN,
   REGISTERED_VIEWING_BG,
   REGISTERED_VIEWING_EN,
+  REJECTED_VIEWING_BG,
+  REJECTED_VIEWING_EN,
 } from "../utils/templates.js";
 
 interface ViewingBlogPost {
@@ -57,10 +61,38 @@ async function resolveBlogPosts(raw: unknown): Promise<ViewingBlogPost[]> {
   }
 }
 
-function resolveTemplate(language: string): string {
+function isBulgarian(language: string): boolean {
+  return language.toLowerCase().startsWith("bg");
+}
+
+function resolveRegisteredViewingTemplate(language: string): string {
   return language.toLowerCase().startsWith("bg")
     ? REGISTERED_VIEWING_BG
     : REGISTERED_VIEWING_EN;
+}
+
+function resolveApprovedViewingTemplate(language: string): string {
+  return isBulgarian(language) ? APPROVED_VIEWING_BG : APPROVED_VIEWING_EN;
+}
+
+function resolveRejectedViewingTemplate(language: string): string {
+  return isBulgarian(language) ? REJECTED_VIEWING_BG : REJECTED_VIEWING_EN;
+}
+
+function viewingTemplateVariables(
+  body: Record<string, unknown>,
+  blog_posts: ViewingBlogPost[],
+): Record<string, unknown> {
+  return {
+    name: stringField(body, "name"),
+    city: stringField(body, "city"),
+    address: stringField(body, "address"),
+    date: stringField(body, "date"),
+    time: stringField(body, "time"),
+    link: stringField(body, "link"),
+    reason: stringField(body, "reason"),
+    blog_posts,
+  };
 }
 
 export async function sendRegisteredViewing(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -71,18 +103,48 @@ export async function sendRegisteredViewing(req: Request, res: Response, next: N
     const language = stringField(body, "language") || stringField(body, "locale") || "en";
     const blog_posts = await resolveBlogPosts(body.blog_posts);
 
-    const templateVariables: Record<string, unknown> = {
-      name: stringField(body, "name"),
-      city: stringField(body, "city"),
-      address: stringField(body, "address"),
-      date: stringField(body, "date"),
-      time: stringField(body, "time"),
-      link: stringField(body, "link"),
-      blog_posts,
-    };
+    const templateVariables = viewingTemplateVariables(body, blog_posts);
 
-    await sendMarketingEmail(resolveTemplate(language), { email, id }, templateVariables);
+    await sendMarketingEmail(resolveRegisteredViewingTemplate(language), { email, id }, templateVariables);
     res.json({ ok: true, message: "Registered viewing email sent" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function sendApprovedViewing(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const body = req.body as Record<string, unknown>;
+    const email = requireEmail(body);
+    const id = stringField(body, "id");
+    const language = stringField(body, "language") || stringField(body, "locale") || "en";
+    const blog_posts = await resolveBlogPosts(body.blog_posts);
+
+    await sendMarketingEmail(
+      resolveApprovedViewingTemplate(language),
+      { email, id },
+      viewingTemplateVariables(body, blog_posts),
+    );
+    res.json({ ok: true, message: "Approved viewing email sent" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function sendRejectedViewing(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const body = req.body as Record<string, unknown>;
+    const email = requireEmail(body);
+    const id = stringField(body, "id");
+    const language = stringField(body, "language") || stringField(body, "locale") || "en";
+    const blog_posts = await resolveBlogPosts(body.blog_posts);
+
+    await sendMarketingEmail(
+      resolveRejectedViewingTemplate(language),
+      { email, id },
+      viewingTemplateVariables(body, blog_posts),
+    );
+    res.json({ ok: true, message: "Rejected viewing email sent" });
   } catch (err) {
     next(err);
   }

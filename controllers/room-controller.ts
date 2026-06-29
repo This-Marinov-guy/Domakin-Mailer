@@ -6,8 +6,13 @@ import {
   previewNewRoomsForCriteriaForProperty,
   sendNewRoomsForCriteriaForProperty,
 } from "../services/send-new-rooms-email.js";
-import { FINISH_LISTING_TEMPLATE } from "../utils/templates.js";
+import {
+  FINISH_LISTING_TEMPLATE,
+  ROOM_SEARCHING_APPLIED_BG,
+  ROOM_SEARCHING_APPLIED_EN,
+} from "../utils/templates.js";
 import { progressPercentFromStep, resolveFinishListingUrl } from "../utils/helpers.js";
+import { fetchWordpressPosts } from "./wordpress-controllers.js";
 
 function requireEmail(body: Record<string, unknown>): string {
   const email = body?.email;
@@ -26,6 +31,30 @@ function parseBlogPosts(raw: unknown): { url: string; image: string; title: stri
       excerpt: typeof o.excerpt === "string" ? o.excerpt : "",
     };
   });
+}
+
+async function resolveBlogPosts(raw: unknown): Promise<{ url: string; image: string; title: string; excerpt: string }[]> {
+  const providedPosts = parseBlogPosts(raw);
+  if (providedPosts.length > 0) return providedPosts;
+
+  try {
+    const posts = await fetchWordpressPosts(1, 3);
+    return posts.slice(0, 3).map((post) => ({
+      url: post.url,
+      image: post.thumbnail || "",
+      title: post.title,
+      excerpt: post.excerpt || "",
+    }));
+  } catch (error) {
+    console.error("[room-mailer] Failed to fetch WordPress posts", error);
+    return [];
+  }
+}
+
+function roomSearchingAppliedTemplate(language: string): string {
+  return language.toLowerCase().startsWith("bg")
+    ? ROOM_SEARCHING_APPLIED_BG
+    : ROOM_SEARCHING_APPLIED_EN;
 }
 
 export async function sendNewRoom(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -69,6 +98,29 @@ export async function sendFinishApplication(req: Request, res: Response, next: N
     };
     await sendMarketingEmail(FINISH_LISTING_TEMPLATE, { email, id }, templateVariables);
     res.json({ ok: true, message: "Finish application email sent" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function sendRoomSearchingApplied(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const body = req.body as Record<string, unknown>;
+    const email = requireEmail(body);
+    const id = typeof body.id === "string" || typeof body.id === "number" ? String(body.id) : "";
+    const language = typeof body.language === "string"
+      ? body.language
+      : typeof body.locale === "string"
+        ? body.locale
+        : "en";
+    const blog_posts = await resolveBlogPosts(body.blog_posts);
+
+    await sendMarketingEmail(
+      roomSearchingAppliedTemplate(language),
+      { email, id },
+      { blog_posts },
+    );
+    res.json({ ok: true, message: "Room searching applied email sent" });
   } catch (err) {
     next(err);
   }

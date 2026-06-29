@@ -21,3 +21,11 @@ export const REMOTE_VIEWING_EN: string = "4bf88874-dc03-452a-9bd1-b9b2e5596d65";
 
 export const REGISTERED_VIEWING_EN: string = "c954c58e-3fa7-48b2-9a4c-b4a70de751b8";
 export const REGISTERED_VIEWING_BG: string = "0e9659bd-2525-4ea8-8b80-8cd9d9dd3d5d";
+
+export const APPROVED_VIEWING_EN: string = "a56fadc4-e020-41d9-b35f-51d4c835f97e";
+export const APPROVED_VIEWING_BG: string = "9a735796-1959-48c4-8e74-99b59410114b";
+export const REJECTED_VIEWING_EN: string = "21254b20-8a8e-471c-9347-ed3cffc7fa9e";
+export const REJECTED_VIEWING_BG: string = "31ccfd08-0c33-436e-8fbb-bed4fc11b97d";
+
+export const ROOM_SEARCHING_APPLIED_EN: string = "35c06c77-06d4-452e-9045-b693548c198c";
+export const ROOM_SEARCHING_APPLIED_BG: string = "a9ce6be5-9898-4819-911a-74bfe6bd2a2c";
